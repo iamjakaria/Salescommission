@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guard Tech Group - Sales Commission</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <style>
+        /* --- Base Styling --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; color: #333; font-size: 12px; }
+        
+        /* --- Letterhead & Title --- */
+        .letterhead { text-align: center; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 3px solid #dc3545; }
+        .company-name { color: #dc3545; margin: 0; font-size: 28px; font-weight: 700; }
+        .company-address, .company-contact { margin: 2px 0; font-size: 13px; color: #007bff; }
+        h1 { color: #007bff; text-align: center; margin: 20px 0 10px 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- Report Date Section --- */
+        .report-date-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-right: 5px;
+        }
+        .report-date-label {
+            font-weight: bold;
+            font-size: 13px;
+            margin-right: 8px;
+            color: #333;
+        }
+        .report-date-input {
+            font-family: inherit;
+            font-size: 13px;
+            padding: 5px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+        }
+        /* Hidden by default, shown only in print */
+        .report-date-print-view {
+            display: none;
+            font-weight: bold;
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* --- Info Section --- */
+        .project-info {
+            border: 1px solid #ddd; padding: 10px; margin-bottom: 15px; background-color: #f8f9fa; 
+            border-left: 5px solid #17a2b8; display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;
+        }
+        .project-info div { font-size: 13px; line-height: 1.4; }
+        .project-info strong { color: #333; min-width: 90px; display: inline-block; }
+        
+        /* --- Table Styling --- */
+        .task-table { width: 100%; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); }
+        .task-table th, .task-table td { 
+            padding: 8px 6px; 
+            border: 1px solid #cceeff; 
+            font-size: 12px; 
+            text-align: center; 
+        }
+        .task-table th { background-color: #007bff; color: white; text-transform: uppercase; letter-spacing: 0.5px; font-size: 12px; }
+        .task-table tbody tr:nth-child(odd) { background-color: #e6f7ff; }
+        .task-table tbody tr:nth-child(even) { background-color: #fffacd; }
+
+        .grand-total-row { background-color: #28a745 !important; color: white; font-weight: bold; font-size: 13px; }
+
+        /* --- Amount In Words Section --- */
+        .amount-words-container {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border: 1px solid #cceeff;
+            background-color: #f0f8ff;
+            border-left: 6px solid #007bff;
+            font-size: 13px;
+            border-radius: 4px;
+            display: flex;
+            align-items: baseline;
+        }
+        .amount-words-label { 
+            font-weight: 700; 
+            color: #0056b3;
+            text-transform: uppercase; 
+            margin-right: 10px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+        .amount-words-text { 
+            font-weight: 600;
+            font-style: italic; 
+            text-transform: capitalize; 
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* --- Remarks Section --- */
+        .remarks-section { margin-top: 20px; padding: 10px; border: 1px solid #ddd; border-left: 5px solid #1e8449; }
+        .remarks-section h2 { font-size: 16px; color: #1e8449; margin-top: 0; border-bottom: 1.5px solid #eee; padding-bottom: 5px; }
+        .remarks-section ul { list-style-type: disc; padding-left: 20px; margin-top: 5px; }
+        .remarks-section li { font-size: 12px; margin-bottom: 3px; }
+
+        /* --- Signature Section --- */
+        .signature-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .sig-block { line-height: 1.3; }
+        .sig-line { border-top: 1.5px solid #000; padding-top: 5px; font-weight: bold; font-size: 12px; color: #000; }
+        .sig-image { max-height: 40px; margin-bottom: 4px; display: none; object-fit: contain; margin-left: auto; margin-right: auto; }
+
+        /* --- Action Buttons --- */
+        .action-container { text-align: center; margin-bottom: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
+        .action-btn { background-color: #28a745; color: white; border: none; padding: 5px 12px; cursor: pointer; font-size: 12px; border-radius: 4px; margin: 0 5px; }
+        .action-btn.secondary { background-color: #6c757d; }
+        .action-btn.warning { background-color: #ffc107; color: #000; }
+        .action-btn.danger { background-color: #dc3545; }
+        .print-btn-group { text-align: center; margin: 30px auto; padding-top: 10px; border-top: 1px solid #ccc; }
+        .print-btn { display: inline-block; padding: 10px 20px; font-size: 16px; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 5px; }
+
+        /* --- MODAL STYLING --- */
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; max-height: 80vh; overflow-y: auto; }
+        .close-btn { color: #aaa; float: right; font-size: 26px; font-weight: bold; cursor: pointer; }
+        .modal label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
+        .modal input, .modal textarea, .modal select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; }
+        .modal-footer { margin-top: 20px; text-align: right; }
+        
+        .data-management { text-align: center; margin: 10px 0; padding: 10px; background-color: #f8f9fa; border-radius: 5px; }
+        
+        /* --- Firebase Reports List --- */
+        .firebase-report-item { 
+            padding: 10px; 
+            margin: 8px 0; 
+            background: #f8f9fa; 
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .firebase-report-item:hover { background: #e9ecef; }
+        .firebase-report-title { font-weight: bold; color: #333; }
+        .firebase-report-meta { font-size: 11px; color: #666; margin-top: 3px; }
+        .firebase-report-actions { margin-top: 8px; }
+        .firebase-report-actions button { margin-right: 5px; }
+
+        /* --- Status Messages --- */
+        .status-message { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px; 
+            display: none;
+        }
+        .status-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        @media print {
+            @page { size: A4; margin: 1cm; }
+            
+            .no-print, .print-btn-group, .modal, .data-management { display: none !important; }
+            .task-table th, .grand-total-row { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+            /* --- Report Date Print Styling (The Trick) --- */
+            .report-date-container { margin-bottom: 5px; justify-content: flex-end; }
+            
+            /* Hide the actual input in print because it shows browser default format */
+            .report-date-input { display: none !important; }
+            
+            /* Show the manually formatted text span instead */
+            .report-date-print-view { display: inline-block !important; }
+
+            /* --- FIXED COLUMN WIDTHS FOR PDF --- */
+            .task-table {
+                table-layout: fixed; 
+                width: 100%;
+                font-size: 10px;
+                border: 1px solid #000 !important;
+            }
+
+            .task-table th, .task-table td {
+                padding: 4px; 
+                word-wrap: break-word;
+                border: 1px solid #000 !important;
+            }
+            
+            .amount-words-container {
+                border: 1px solid #000 !important;
+                border-left: 6px solid #000 !important;
+                background-color: #fff !important;
+                color: #000 !important;
+            }
+            .amount-words-label { color: #000 !important; }
+
+            .task-table th:nth-child(1) { width: 5%; }  /* S.L */
+            .task-table th:nth-child(2) { width: 10%; } /* Date */
+            .task-table th:nth-child(3) { width: 23%; } /* Project */
+            .task-table th:nth-child(4) { width: 22%; } /* Items */
+            .task-table th:nth-child(5) { width: 10%; } /* USD */
+            .task-table th:nth-child(6) { width: 10%; } /* BDT */
+            .task-table th:nth-child(7) { width: 8%; }  /* Comm % */
+            .task-table th:nth-child(8) { width: 12%; } /* Total Comm */
+            .task-table th:nth-child(9) { display: none; } /* Actions */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="letterhead">
+        <div class="company-name">Guard Tech (BD) Limited</div>
+        <div class="company-address">Mirpur Shahi Masjid and Madrasa Complex, 259/A, 3rd Floor, Darussalam, Dhaka 1216</div>
+        <div class="company-contact">Mobile : 01623330000, Email : info@guardtechbd.com, Website : www.guardtechbd.com</div>
+    </div>
+
+    <h1>Sales Commission</h1>
+    
+    <div class="report-date-container">
+        <label for="main-report-date" class="report-date-label">Date:</label>
+        <input type="date" id="main-report-date" class="report-date-input" onchange="updateReportDateDisplay()">
+        <span id="report-date-print-view" class="report-date-print-view"></span>
+    </div>
+
+    <div class="data-management no-print">
+        <button class="action-btn" onclick="showEditProjectModal()">✏️ Edit Info</button>
+        <button class="action-btn secondary" onclick="showSaveModal()">💾 Save to Cloud</button>
+        <button class="action-btn secondary" onclick="showLoadModal()">📂 Load from Cloud</button>
+        <button class="action-btn warning" onclick="showDeleteModal()">🗑️ Manage Reports</button>
+    </div>
+
+    <div id="statusMessage" class="status-message"></div>
+
+    <div class="project-info" id="project-info-section">
+        <div id="display-name"><strong>Name:</strong> </div>
+        <div id="display-designation"><strong>Designation:</strong> </div>
+        
+        <div class="action-container no-print" style="grid-column: 1 / span 2; text-align: left; padding: 5px 0 0 0; margin: 0;">
+             <button class="action-btn" onclick="showAddTaskModal()">➕ Add New Entry</button>
+        </div>
+    </div>
+
+    <table class="task-table" id="task-table">
+        <thead>
+            <tr>
+                <th>S.L</th>
+                <th>Date</th>
+                <th>Project</th>
+                <th>Items</th>
+                <th>USD Amount</th>
+                <th>BDT Amount</th>
+                <th>Comm %</th>
+                <th>Total Comm</th>
+                <th class="no-print" style="width: 80px;">Actions</th> 
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr class="grand-total-row">
+                <td colspan="7" style="text-align: right; padding-right: 15px;">GRAND TOTAL COMMISSION:</td>
+                <td id="grand-total-display">0.00</td>
+                <td class="no-print"></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="amount-words-container">
+        <span class="amount-words-label">Amount In Words :</span>
+        <span id="amount-in-words-display" class="amount-words-text">Zero Taka Only</span>
+    </div>
+    
+    <div class="remarks-section" id="remarks-section">
+        <h2>Remarks</h2>
+        <ul id="remarks-list"></ul>
+        <div class="action-container no-print" style="border: none;">
+             <button class="action-btn" onclick="showAddRemarkModal()">➕ Add Remark</button>
+        </div>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-container">
+            <div class="sig-block">
+                <img class="sig-image" id="img-admin">
+                <div class="sig-line">Admin</div>
+            </div>
+            <div class="sig-block">
+                <img class="sig-image" id="img-accounts">
+                <div class="sig-line">Accounts</div>
+            </div>
+            <div class="sig-block">
+                <img class="sig-image" id="img-ceo">
+                <div class="sig-line">CEO</div>
+            </div>
+            <div class="sig-block">
+                <img class="sig-image" id="img-md">
+                <div class="sig-line">MD Sir</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="print-btn-group no-print">
+        <button class="print-btn" onclick="generatePDF()">📄 Print to PDF</button>
+        <button class="print-btn" style="background-color: #007bff;" onclick="window.print()">🖨️ Quick Print (A4)</button>
+    </div>
+    
+    <div id="projectInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('projectInfoModal')">×</span>
+            <h2>Edit Info</h2>
+            <label>Name:</label><input type="text" id="modal-name">
+            <label>Designation:</label><input type="text" id="modal-designation">
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('projectInfoModal')">Cancel</button>
+                <button class="action-btn" onclick="saveProjectInfo()">Update</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('taskModal')">×</span>
+            <h2 id="taskModalTitle">Entry Details</h2>
+            <input type="hidden" id="modal-task-id">
+            <label>Date:</label><input type="date" id="modal-date">
+            <label>Project:</label><input type="text" id="modal-project">
+            <label>Items:</label><input type="text" id="modal-items">
+            <label>USD Amount:</label><input type="number" id="modal-usd" step="0.01" value="0">
+            <label>BDT Amount:</label><input type="number" id="modal-bdt" step="0.01" value="0">
+            <label>Commission %:</label><input type="number" id="modal-comm-perc" step="0.1" value="0">
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('taskModal')">Cancel</button>
+                <button class="action-btn" onclick="saveTask()">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="remarkModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('remarkModal')">×</span>
+            <h2>Add Remark</h2>
+            <textarea id="modal-remark-text" rows="3"></textarea>
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('remarkModal')">Cancel</button>
+                <button class="action-btn" onclick="saveRemark()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('saveModal')">×</span>
+            <h2>Save to Cloud</h2>
+            <label>Report Title:</label><input type="text" id="save-title" placeholder="Enter report title" required>
+            <label>Description (Optional):</label><textarea id="save-description" rows="2" placeholder="Brief description"></textarea>
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('saveModal')">Cancel</button>
+                <button class="action-btn" onclick="saveToFirebase()">💾 Save to Cloud</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('loadModal')">×</span>
+            <h2>Load from Cloud</h2>
+            <div id="reportsList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+                <p>Loading reports...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('loadModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('deleteModal')">×</span>
+            <h2>Manage Cloud Reports</h2>
+            <p>Select reports to delete:</p>
+            <div id="deleteReportsList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+                <p>Loading reports...</p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn secondary" onclick="closeModal('deleteModal')">Cancel</button>
+                <button class="action-btn danger" onclick="deleteSelectedReports()" id="deleteButton" disabled>🗑️ Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYq8iA7LxA6eRV3tXdz9TkQyWsnGROAB0",
+            authDomain: "datacenter-28305.firebaseapp.com",
+            databaseURL: "https://datacenter-28305-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "datacenter-28305",
+            storageBucket: "datacenter-28305.firebasestorage.app",
+            messagingSenderId: "681792917707",
+            appId: "1:681792917707:web:51d14c45229a6a63f64b4e",
+            measurementId: "G-GG61ZNXSHM"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        let slCounter = 1;
+        let selectedReportsToDelete = new Set();
+
+        /* --- Function to update the print-view date text --- */
+        function updateReportDateDisplay() {
+            const input = document.getElementById('main-report-date');
+            const display = document.getElementById('report-date-print-view');
+            
+            if (input.value) {
+                // Input value is always yyyy-mm-dd
+                const parts = input.value.split('-'); 
+                // Format: dd.mm.yyyy
+                display.innerText = `${parts[2]}.${parts[1]}.${parts[0]}`;
+            } else {
+                display.innerText = '';
+            }
+        }
+
+        /* --- Updated Number to Words Logic (Taka & Paisa) --- */
+        function numberToWords(n) {
+            if (n < 0) return "Negative " + numberToWords(-n);
+            
+            let val = parseFloat(n).toFixed(2);
+            let [integerPart, decimalPart] = val.split('.');
+            let integerNum = parseInt(integerPart);
+            let decimalNum = parseInt(decimalPart);
+
+            if (integerNum === 0 && decimalNum === 0) return "Zero Taka Only";
+
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            const scales = ['', 'Thousand', 'Million', 'Billion'];
+
+            function convertBlock(num) {
+                if (num === 0) return '';
+                if (num < 20) return ones[num] + ' ';
+                if (num < 100) return tens[Math.floor(num / 10)] + ' ' + ones[num % 10] + ' ';
+                return ones[Math.floor(num / 100)] + ' Hundred ' + convertBlock(num % 100);
+            }
+
+            function convertNumber(num) {
+                let word = '';
+                let scaleIndex = 0;
+                while (num > 0) {
+                    let chunk = num % 1000;
+                    if (chunk !== 0) {
+                        word = convertBlock(chunk) + scales[scaleIndex] + ' ' + word;
+                    }
+                    num = Math.floor(num / 1000);
+                    scaleIndex++;
+                }
+                return word.trim();
+            }
+
+            let result = "";
+            if (integerNum > 0) result += convertNumber(integerNum) + " Taka";
+            if (decimalNum > 0) {
+                if (result !== "") result += " And ";
+                result += convertNumber(decimalNum) + " Paisa";
+            } else {
+                if(integerNum > 0 && !result.includes("Taka")) result += " Taka"; 
+            }
+            
+            if (integerNum === 0 && decimalNum > 0) return convertNumber(decimalNum) + " Paisa Only";
+
+            return result + " Only";
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+        }
+
+        function collectCurrentData() {
+            const rows = [];
+            document.querySelectorAll('#task-table tbody tr').forEach(tr => {
+                rows.push({
+                    sl: tr.cells[0].innerText,
+                    date_raw: tr.cells[1].getAttribute('data-raw'),
+                    project: tr.cells[2].innerText,
+                    items: tr.cells[3].innerText,
+                    usd: tr.cells[4].innerText,
+                    bdt: tr.cells[5].innerText,
+                    comm_perc: tr.cells[6].innerText,
+                    total: tr.cells[7].innerText
+                });
+            });
+            
+            return {
+                name: document.getElementById('display-name').innerText.replace('Name: ', ''),
+                designation: document.getElementById('display-designation').innerText.replace('Designation: ', ''),
+                reportDate: document.getElementById('main-report-date').value,
+                rows: rows,
+                remarks: Array.from(document.querySelectorAll('#remarks-list li .remark-text')).map(s => s.innerText),
+                counter: slCounter,
+                savedAt: new Date().toISOString()
+            };
+        }
+
+        function loadReportData(data) {
+            document.getElementById('display-name').innerHTML = `<strong>Name:</strong> ${data.name || ''}`;
+            document.getElementById('display-designation').innerHTML = `<strong>Designation:</strong> ${data.designation || ''}`;
+            
+            if (data.reportDate) {
+                document.getElementById('main-report-date').value = data.reportDate;
+            } else {
+                document.getElementById('main-report-date').valueAsDate = new Date();
+            }
+            // Trigger update for the display text
+            updateReportDateDisplay();
+
+            const tbody = document.querySelector('#task-table tbody');
+            tbody.innerHTML = '';
+            
+            if (data.rows && Array.isArray(data.rows)) {
+                data.rows.forEach(r => addRowToTable(r));
+            }
+            
+            const rlist = document.getElementById('remarks-list');
+            rlist.innerHTML = '';
+            
+            if (data.remarks && Array.isArray(data.remarks)) {
+                data.remarks.forEach(txt => addRemarkToUI(txt));
+            }
+            
+            slCounter = data.counter || 1;
+            updateGrandTotal();
+            showStatus('Report loaded successfully!', 'success');
+        }
+
+        function saveToFirebase() {
+            const title = document.getElementById('save-title').value.trim();
+            const description = document.getElementById('save-description').value.trim();
+            
+            if (!title) {
+                showStatus('Please enter a report title!', 'error');
+                return;
+            }
+            
+            const reportData = collectCurrentData();
+            const reportId = database.ref().child('sales_reports').push().key;
+            
+            const fullReport = {
+                title: title,
+                description: description,
+                data: reportData,
+                createdAt: new Date().toISOString(),
+                reportId: reportId
+            };
+            
+            database.ref(`sales_reports/${reportId}`).set(fullReport)
+                .then(() => {
+                    showStatus('Report saved to Cloud successfully!', 'success');
+                    closeModal('saveModal');
+                    document.getElementById('save-title').value = '';
+                    document.getElementById('save-description').value = '';
+                })
+                .catch(error => {
+                    console.error('Error saving to Firebase:', error);
+                    showStatus('Error saving to Cloud: ' + error.message, 'error');
+                });
+        }
+
+        function loadAllReports() {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '<p>Loading reports...</p>';
+            
+            database.ref('sales_reports').once('value')
+                .then(snapshot => {
+                    const reports = snapshot.val();
+                    if (!reports) {
+                        reportsList.innerHTML = '<p>No reports found in Cloud.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    Object.keys(reports).forEach(key => {
+                        const report = reports[key];
+                        html += `
+                            <div class="firebase-report-item">
+                                <div class="firebase-report-title">${report.title || 'Untitled Report'}</div>
+                                <div class="firebase-report-meta">
+                                    Saved: ${new Date(report.createdAt).toLocaleDateString()}
+                                    ${report.description ? ' | ' + report.description : ''}
+                                </div>
+                                <div class="firebase-report-actions">
+                                    <button class="action-btn" onclick="loadReportFromFirebase('${key}')">Load</button>
+                                    <button class="action-btn warning" onclick="duplicateReport('${key}')">Duplicate</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    reportsList.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading reports:', error);
+                    reportsList.innerHTML = '<p>Error loading reports: ' + error.message + '</p>';
+                });
+        }
+
+        function loadDeleteReports() {
+            const deleteList = document.getElementById('deleteReportsList');
+            deleteList.innerHTML = '<p>Loading reports...</p>';
+            selectedReportsToDelete.clear();
+            
+            database.ref('sales_reports').once('value')
+                .then(snapshot => {
+                    const reports = snapshot.val();
+                    if (!reports) {
+                        deleteList.innerHTML = '<p>No reports found in Cloud.</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    Object.keys(reports).forEach(key => {
+                        const report = reports[key];
+                        html += `
+                            <div style="margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" value="${key}" style="margin-right: 10px;" onchange="toggleReportDelete('${key}', this.checked)">
+                                    <span style="flex: 1;">
+                                        <strong>${report.title || 'Untitled Report'}</strong><br>
+                                        <small style="color: #666;">Saved: ${new Date(report.createdAt).toLocaleDateString()}</small>
+                                    </span>
+                                </label>
+                            </div>
+                        `;
+                    });
+                    
+                    deleteList.innerHTML = html;
+                });
+        }
+
+        function toggleReportDelete(key, checked) {
+            if (checked) {
+                selectedReportsToDelete.add(key);
+            } else {
+                selectedReportsToDelete.delete(key);
+            }
+            
+            const deleteBtn = document.getElementById('deleteButton');
+            deleteBtn.disabled = selectedReportsToDelete.size === 0;
+        }
+
+        function deleteSelectedReports() {
+            if (selectedReportsToDelete.size === 0) return;
+            
+            if (!confirm(`Are you sure you want to delete ${selectedReportsToDelete.size} report(s)? This action cannot be undone.`)) {
+                return;
+            }
+            
+            const deletions = [];
+            selectedReportsToDelete.forEach(key => {
+                deletions.push(database.ref(`sales_reports/${key}`).remove());
+            });
+            
+            Promise.all(deletions)
+                .then(() => {
+                    showStatus(`${selectedReportsToDelete.size} report(s) deleted successfully!`, 'success');
+                    selectedReportsToDelete.clear();
+                    document.getElementById('deleteButton').disabled = true;
+                    loadDeleteReports();
+                })
+                .catch(error => {
+                    console.error('Error deleting reports:', error);
+                    showStatus('Error deleting reports: ' + error.message, 'error');
+                });
+        }
+
+        function loadReportFromFirebase(key) {
+            database.ref(`sales_reports/${key}`).once('value')
+                .then(snapshot => {
+                    const report = snapshot.val();
+                    if (report && report.data) {
+                        loadReportData(report.data);
+                        closeModal('loadModal');
+                        showStatus(`Report "${report.title}" loaded successfully!`, 'success');
+                    } else {
+                        showStatus('Error: Invalid report data', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading report:', error);
+                    showStatus('Error loading report: ' + error.message, 'error');
+                });
+        }
+
+        function duplicateReport(key) {
+            database.ref(`sales_reports/${key}`).once('value')
+                .then(snapshot => {
+                    const report = snapshot.val();
+                    if (report) {
+                        const newReportId = database.ref().child('sales_reports').push().key;
+                        const duplicatedReport = {
+                            ...report,
+                            title: report.title + ' (Copy)',
+                            createdAt: new Date().toISOString(),
+                            reportId: newReportId
+                        };
+                        
+                        return database.ref(`sales_reports/${newReportId}`).set(duplicatedReport);
+                    }
+                })
+                .then(() => {
+                    showStatus('Report duplicated successfully!', 'success');
+                    loadAllReports();
+                })
+                .catch(error => {
+                    console.error('Error duplicating report:', error);
+                    showStatus('Error duplicating report: ' + error.message, 'error');
+                });
+        }
+
+        function showSaveModal() {
+            const today = new Date().toLocaleDateString();
+            document.getElementById('save-title').value = `Report ${today}`;
+            document.getElementById('save-description').value = '';
+            document.getElementById('saveModal').style.display = 'block';
+        }
+
+        function showLoadModal() {
+            document.getElementById('loadModal').style.display = 'block';
+            loadAllReports();
+        }
+
+        function showDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'block';
+            loadDeleteReports();
+        }
+
+        function showEditProjectModal() {
+            document.getElementById('modal-name').value = document.getElementById('display-name').innerText.replace('Name: ', '');
+            document.getElementById('modal-designation').value = document.getElementById('display-designation').innerText.replace('Designation: ', '');
+            document.getElementById('projectInfoModal').style.display = 'block';
+        }
+
+        function saveProjectInfo() {
+            document.getElementById('display-name').innerHTML = `<strong>Name:</strong> ${document.getElementById('modal-name').value}`;
+            document.getElementById('display-designation').innerHTML = `<strong>Designation:</strong> ${document.getElementById('modal-designation').value}`;
+            closeModal('projectInfoModal');
+            showStatus('Info updated successfully!', 'success');
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('taskModalTitle').innerText = 'Add Entry';
+            document.getElementById('modal-task-id').value = 'NEW';
+            document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-project').value = '';
+            document.getElementById('modal-items').value = '';
+            document.getElementById('modal-usd').value = '0';
+            document.getElementById('modal-bdt').value = '0';
+            document.getElementById('modal-comm-perc').value = '0';
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function saveTask() {
+            const id = document.getElementById('modal-task-id').value;
+            const date = document.getElementById('modal-date').value;
+            const usd = parseFloat(document.getElementById('modal-usd').value) || 0;
+            const bdt = parseFloat(document.getElementById('modal-bdt').value) || 0;
+            const perc = parseFloat(document.getElementById('modal-comm-perc').value) || 0;
+            
+            // --- MODIFIED LOGIC START ---
+            // Formula: ((USD * 120) + BDT) * Percentage
+            const conversionRate = 120;
+            const totalAmountBDT = (usd * conversionRate) + bdt;
+            const calculatedComm = totalAmountBDT * (perc / 100);
+            // --- MODIFIED LOGIC END ---
+            
+            const rowData = {
+                sl: id === 'NEW' ? slCounter++ : id,
+                date_raw: date,
+                project: document.getElementById('modal-project').value,
+                items: document.getElementById('modal-items').value,
+                usd: usd.toFixed(2),
+                bdt: bdt.toFixed(2),
+                comm_perc: perc.toFixed(1) + '%',
+                total: calculatedComm.toFixed(2)
+            };
+            
+            if (id === 'NEW') {
+                addRowToTable(rowData);
+                showStatus('Entry added successfully!', 'success');
+            } else {
+                updateRowInTable(id, rowData);
+                showStatus('Entry updated successfully!', 'success');
+            }
+            
+            updateGrandTotal();
+            closeModal('taskModal');
+        }
+
+        function addRowToTable(r) {
+            const tr = document.createElement('tr');
+            tr.id = `row-${r.sl}`;
+            tr.innerHTML = `
+                <td>${r.sl}</td>
+                <td data-raw="${r.date_raw}">${r.date_raw ? r.date_raw.split('-').reverse().join('.') : ''}</td>
+                <td>${r.project}</td>
+                <td>${r.items}</td>
+                <td>${r.usd}</td>
+                <td>${r.bdt}</td>
+                <td>${r.comm_perc}</td>
+                <td class="row-val">${r.total}</td>
+                <td class="no-print">
+                    <button class="action-btn" onclick="editRow('${r.sl}')">Edit</button>
+                    <button class="action-btn" style="background-color:#dc3545" onclick="deleteRow('${r.sl}')">Del</button>
+                </td>
+            `;
+            document.querySelector('#task-table tbody').appendChild(tr);
+        }
+
+        function editRow(sl) {
+            const tr = document.getElementById(`row-${sl}`);
+            document.getElementById('modal-task-id').value = sl;
+            document.getElementById('modal-date').value = tr.cells[1].getAttribute('data-raw');
+            document.getElementById('modal-project').value = tr.cells[2].innerText;
+            document.getElementById('modal-items').value = tr.cells[3].innerText;
+            document.getElementById('modal-usd').value = tr.cells[4].innerText;
+            document.getElementById('modal-bdt').value = tr.cells[5].innerText;
+            document.getElementById('modal-comm-perc').value = tr.cells[6].innerText.replace('%', '');
+            document.getElementById('taskModalTitle').innerText = 'Edit Entry';
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function updateRowInTable(sl, r) {
+            const tr = document.getElementById(`row-${sl}`);
+            tr.cells[1].innerText = r.date_raw ? r.date_raw.split('-').reverse().join('.') : '';
+            tr.cells[1].setAttribute('data-raw', r.date_raw);
+            tr.cells[2].innerText = r.project;
+            tr.cells[3].innerText = r.items;
+            tr.cells[4].innerText = r.usd;
+            tr.cells[5].innerText = r.bdt;
+            tr.cells[6].innerText = r.comm_perc;
+            tr.cells[7].innerText = r.total;
+        }
+
+        function deleteRow(sl) { 
+            if(confirm('Delete this entry?')) { 
+                document.getElementById(`row-${sl}`).remove(); 
+                updateGrandTotal();
+                showStatus('Entry deleted successfully!', 'success');
+            } 
+        }
+
+        function updateGrandTotal() {
+            let total = 0;
+            document.querySelectorAll('.row-val').forEach(td => total += parseFloat(td.innerText) || 0);
+            
+            document.getElementById('grand-total-display').innerText = total.toFixed(2);
+            
+            const words = numberToWords(total);
+            document.getElementById('amount-in-words-display').innerText = words;
+        }
+
+        function addRemarkToUI(text) {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="remark-text">${text}</span> <span class="no-print"><button class="action-btn" style="padding:2px 5px; background-color:#dc3545;" onclick="this.parentElement.parentElement.remove(); updateGrandTotal()">x</button></span>`;
+            document.getElementById('remarks-list').appendChild(li);
+        }
+
+        function showAddRemarkModal() { 
+            document.getElementById('modal-remark-text').value = ''; 
+            document.getElementById('remarkModal').style.display='block'; 
+        }
+        
+        function saveRemark() { 
+            const val = document.getElementById('modal-remark-text').value.trim(); 
+            if(val) {
+                addRemarkToUI(val);
+                showStatus('Remark added successfully!', 'success');
+            }
+            closeModal('remarkModal'); 
+        }
+
+        function generatePDF() {
+            window.print();
+        }
+
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none'; 
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('main-report-date').valueAsDate = new Date();
+            // Init print date display
+            updateReportDateDisplay();
+
+            const sampleRow = {
+                sl: 1,
+                date_raw: new Date().toISOString().split('T')[0],
+                project: 'Sample Project',
+                items: 'Security Equipment',
+                usd: '1000.00',
+                bdt: '5000.00',
+                comm_perc: '5.0%',
+                // Updated sample math: ((1000*120) + 5000) * 0.05 = (120000+5000)*0.05 = 6250
+                total: '6250.00' 
+            };
+            addRowToTable(sampleRow);
+            slCounter = 2;
+            updateGrandTotal();
+            
+            document.getElementById('display-name').innerHTML = `<strong>Name:</strong> Sales Representative`;
+            document.getElementById('display-designation').innerHTML = `<strong>Designation:</strong> Sales Executive`;
+            
+            showStatus('Welcome to Guard Tech Group Sales Commission System!', 'info');
+        });
+
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
