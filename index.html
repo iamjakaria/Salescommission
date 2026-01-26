@@ -75,25 +75,42 @@
         .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-card-gen { background: var(--faith-dark); color: white; border:none; padding: 16px; width: 100%; border-radius: 14px; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(27, 38, 59, 0.3);}
 
-        /* CARD VIEW STYLES - Optimized for High Quality Export */
+        /* CARD VIEW STYLES */
         .card-preview-zone { background: #e9ecef; padding: 20px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; overflow: hidden;}
         .card-viewport { width: 100%; overflow-x: auto; padding-bottom: 20px; display: flex; justify-content: flex-start; }
         #visitingCard {
             width: 600px; height: 340px; background: #fff; display: flex; position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin: 0 auto;
         }
         .card-bg-grid { position: absolute; inset: 0; background-image: radial-gradient(#d0000008 1px, transparent 1px); background-size: 15px 15px; pointer-events: none; }
+        
+        /* Accents */
         .top-red-accent { position: absolute; top: 0; left: 0; width: 150px; height: 8px; background: var(--faith-red); clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); z-index: 10; }
         .bottom-red-accent { position: absolute; bottom: 0; right: 0; width: 200px; height: 12px; background: var(--faith-red); clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%); z-index: 10; }
-        .middle-partition { position: absolute; left: 42%; top: 0; bottom: 0; width: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; }
-        .vernier-scale { height: 80%; width: 2px; background: #eee; position: relative; }
-        .vernier-scale::before { content: ''; position: absolute; inset: 0 -6px; background-image: linear-gradient(to bottom, var(--faith-red) 2px, transparent 2px), linear-gradient(to bottom, #adb5bd 1px, transparent 1px); background-size: 100% 40px, 100% 8px; }
-        .circuit-node { width: 8px; height: 8px; border: 2px solid var(--faith-red); border-radius: 50%; background: white; position: absolute; z-index: 6; }
-        .node-top { top: 10%; } .node-bottom { bottom: 10%; }
+        
+        /* SYMMETRICAL MIDDLE PARTITION */
+        .middle-partition { 
+            position: absolute; left: 42%; top: 0; bottom: 0; width: 24px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; 
+        }
+        .vernier-scale { height: 85%; width: 2px; background: #f0f0f0; position: relative; }
+        .vernier-scale::before { 
+            content: ''; position: absolute; inset: 0 -6px; 
+            background-image: 
+                linear-gradient(to bottom, var(--faith-red) 2px, transparent 2px), 
+                linear-gradient(to bottom, #cbd5e0 1px, transparent 1px); 
+            background-size: 100% 40px, 100% 8px;
+            background-position: top center;
+        }
+        .circuit-node { width: 10px; height: 10px; border: 2px solid var(--faith-red); border-radius: 50%; background: white; position: absolute; z-index: 6; }
+        .node-top { top: 7.5%; } 
+        .node-bottom { bottom: 7.5%; }
+
         .side-branding { width: 42%; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2;}
-        .logo-holder { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-        .logo-holder img { max-width: 90%; max-height: 100%; object-fit: contain; }
+        .logo-holder { width: 100%; height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .logo-holder img { max-width: 95%; max-height: 100%; object-fit: contain; }
         .company-title { font-size: 16px; font-weight: 900; color: var(--faith-red); text-transform: uppercase; letter-spacing: 1.2px; }
-        .side-info { width: 58%; padding: 30px; display: flex; flex-direction: column; justify-content: center; z-index: 2; }
+        
+        .side-info { width: 58%; padding: 30px 30px 30px 45px; display: flex; flex-direction: column; justify-content: center; z-index: 2; }
         .user-title-block h1 { margin: 0; font-size: 22px; font-weight: 900; color: #111; }
         .designation-text { margin: 4px 0; font-size: 10px; color: var(--faith-red); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; }
         .credentials-text { font-size: 9px; color: var(--gray); font-weight: 600; line-height: 1.3; }
@@ -215,11 +232,13 @@
                         <div class="card-bg-grid"></div>
                         <div class="top-red-accent"></div>
                         <div class="bottom-red-accent"></div>
+                        
                         <div class="middle-partition">
                             <div class="circuit-node node-top"></div>
                             <div class="vernier-scale"></div>
                             <div class="circuit-node node-bottom"></div>
                         </div>
+
                         <div class="side-branding">
                             <div class="logo-holder"><img id="cardLogoImg" src="" alt=""></div>
                             <div class="company-title" id="cardCompany"></div>
@@ -258,7 +277,6 @@
         let profileImg = new Image();
         let logoImg = new Image();
 
-        // ---------------- TAB LOGIC ----------------
         function openTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -270,7 +288,6 @@
             if(tabName === 'cardView') { document.getElementById('btn-cardView').classList.add('active'); cardSync(); }
         }
 
-        // ---------------- QUOTE LOGIC ----------------
         function setupUploader(id, key, img) {
             const uploader = document.getElementById(id);
             if(uploader) {
@@ -376,7 +393,6 @@
             lines.forEach((l, i) => context.fillText(l.trim(), x, startY + (i * lineHeight)));
         }
 
-        // ---------------- CARD LOGIC ----------------
         const cardFields = ['inCompany', 'inName', 'inTitle', 'inCreds', 'inMobile', 'inEmail1', 'inEmail2', 'inWeb', 'inHotline', 'inAddr'];
 
         function cardSync() {
@@ -411,14 +427,10 @@
         }
 
         function downloadCardHD() {
-            const cardElement = document.getElementById('visitingCard');
-            // Scale 5 provides Ultra-HD resolution (3000x1700px approx)
-            html2canvas(cardElement, { 
+            html2canvas(document.getElementById('visitingCard'), { 
                 scale: 5, 
                 useCORS: true, 
-                backgroundColor: '#ffffff',
-                logging: false,
-                imageTimeout: 0
+                backgroundColor: '#ffffff'
             }).then(c => {
                 const link = document.createElement('a');
                 link.download = 'UltraHD_Business_Card.jpg';
@@ -427,7 +439,6 @@
             });
         }
 
-        // ---------------- GLOBAL LOAD ----------------
         window.onload = () => {
             document.getElementById('quoteInput').value = localStorage.getItem('storedQuote') || "নিজের নিয়ত ঠিক থাকলে পথও ধীরে ধীরে খুলে যায়";
             document.getElementById('nameInput').value = localStorage.getItem('storedName') || "Engr. Md. Jakaria Ahmed";
