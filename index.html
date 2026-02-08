@@ -438,27 +438,6 @@
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes rotate { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        @media print {
-    /* Force the body to be visible and scrollable for the print engine */
-    body, html {
-        overflow: visible !important;
-        height: auto !important;
-        display: block !important;
-    }
-
-    /* Hide the UI elements that shouldn't be on a PDF */
-    .app-bar, .logout-btn, .nav-grid, .modal-overlay, #loginOverlay {
-        display: none !important;
-    }
-
-    /* Ensure the content area takes up the full page */
-    .content-area, #mainMenu, #detailView {
-        display: block !important;
-        overflow: visible !important;
-        position: static !important;
-    }
-}
-
     </style>
 </head>
 <body>
