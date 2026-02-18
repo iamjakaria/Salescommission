@@ -11,7 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
-        .tab-content { display: none; min-height: calc(100vh - 100px); }
+        .tab-content { display: none; min-height: calc(150vh - 100px); }  /* increased vertical size by 50% (from 100vh to 150vh) */
         .tab-content.active { display: flex; flex-direction: column; }
         .invoice-sub-tab, .accounts-sub-tab { display: none; }
         .invoice-sub-tab.active, .accounts-sub-tab.active { display: block; }
@@ -32,9 +32,34 @@
         .suggestion-name { font-weight: 600; font-size: 13px; color: #1f2937; display: block; }
         .suggestion-sub { font-size: 11px; color: #ef4444; display: block; margin-top: 1px; }
         .suggestion-desc { font-size: 11px; color: #f59e0b; display: block; margin-top: 1px; }
+
+        /* animated 'Move top' button style */
+        .move-top-btn {
+            position: fixed; bottom: 30px; right: 30px; z-index: 999;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white; border: none; border-radius: 60px; padding: 16px 24px;
+            font-size: 1.2rem; font-weight: bold; box-shadow: 0 12px 20px -10px rgba(102,126,234,0.6);
+            cursor: pointer; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px;
+            border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(4px);
+            animation: float 3s ease-in-out infinite;
+        }
+        .move-top-btn i { font-size: 1.4rem; transition: transform 0.3s; }
+        .move-top-btn:hover { background: linear-gradient(145deg, #764ba2, #667eea); transform: scale(1.1) translateY(-5px); box-shadow: 0 20px 30px -5px #667eea; }
+        .move-top-btn:hover i { transform: translateY(-8px); }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        #moveTopBtn { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+
+    <!-- Animated Move Top Button (colorful, floats, appears on every tab) -->
+    <button id="moveTopBtn" class="move-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
+        <i class="fas fa-arrow-up"></i> <span>TOP</span>
+    </button>
 
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
@@ -44,7 +69,7 @@
                 </div>
                 
                 <!-- nav-grid: 3 items per row on mobile, auto on desktop -->
-                <div id="nav-grid" class="grid grid-cols-3 md:flex gap-2 w-full md:w-auto">
+                <div id="nav-grid" class="grid grid-cols-3 gap-2 w-full">
                     <button onclick="openTab('clients')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm border border-red-100">
                         <i class="fas fa-users text-lg mb-1"></i>
                         <span class="text-[9px] uppercase font-bold tracking-tight">Clients</span>
@@ -171,7 +196,7 @@
             </div>
         </div>
 
-        <!-- ACCOUNTS (unchanged) -->
+        <!-- ACCOUNTS (unchanged except sorting for latest data first) -->
         <div id="accounts" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-purple-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -459,7 +484,7 @@
         </div>
     </main>
 
-    <!-- Modals (identical to original, but with proper ID for product suggestions inside itemModal) -->
+    <!-- Modals (identical to original) -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center"><h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3><button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
@@ -504,7 +529,7 @@
         </div>
     </div>
 
-    <!-- ITEM MODAL – FIXED: added missing fields, product suggestions, and onsubmit handler -->
+    <!-- ITEM MODAL – same as original -->
     <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md">
             <div class="bg-yellow-500 p-4 text-white flex justify-between items-center">
@@ -674,11 +699,13 @@
             if(tabId === 'invoice') switchInvoiceSubTab('create');
             if(tabId === 'inventory') renderInventory();
             if(tabId === 'accounts') switchAccountsTab('transactions');
+            document.getElementById('moveTopBtn').style.display = 'flex';
         }
 
         function showDashboard() {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById('nav-grid').classList.remove('hidden');
+            document.getElementById('moveTopBtn').style.display = 'none';
         }
 
         // Supplier Logic (unchanged)
@@ -725,7 +752,7 @@
             document.getElementById('outStockCount').innerText = out;
         }
 
-        // ACCOUNTS LOGIC (unchanged)
+        // ACCOUNTS LOGIC (modified sorting for latest data first)
         function switchAccountsTab(sub) {
             activeAccountsTab = sub;
             document.querySelectorAll('.accounts-sub-tab').forEach(t => t.classList.remove('active'));
@@ -859,35 +886,37 @@
             const thisYear = now.getFullYear();
             const thisMonth = now.getMonth();
 
-            // Render Income
-            document.getElementById('incomeTableBody').innerHTML = income.map((item, i) => `
+            // Render Income (latest first)
+            const sortedIncome = [...income].sort((a,b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('incomeTableBody').innerHTML = sortedIncome.map((item, i) => `
                 <tr class="border-b">
                     <td class="p-3">${i+1}</td>
                     <td class="p-3">${formatFriendlyDate(item.date)}</td>
                     <td class="p-3 font-bold">${item.purpose}</td>
                     <td class="p-3 text-green-600 font-bold">${item.amount.toFixed(2)}</td>
                     <td class="p-3 text-center">
-                        <button onclick="toggleAccModal(true, 'income', ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteAcc('income', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button>
+                        <button onclick="toggleAccModal(true, 'income', ${income.indexOf(item)})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteAcc('income', ${income.indexOf(item)})" class="text-red-400"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
 
-            // Render Expense
-            document.getElementById('expenseTableBody').innerHTML = expense.map((item, i) => `
+            // Render Expense (latest first)
+            const sortedExpense = [...expense].sort((a,b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('expenseTableBody').innerHTML = sortedExpense.map((item, i) => `
                 <tr class="border-b">
                     <td class="p-3">${i+1}</td>
                     <td class="p-3">${formatFriendlyDate(item.date)}</td>
                     <td class="p-3 font-bold">${item.purpose}</td>
                     <td class="p-3 text-red-600 font-bold">${item.amount.toFixed(2)}</td>
                     <td class="p-3 text-center">
-                        <button onclick="toggleAccModal(true, 'expense', ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteAcc('expense', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button>
+                        <button onclick="toggleAccModal(true, 'expense', ${expense.indexOf(item)})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteAcc('expense', ${expense.indexOf(item)})" class="text-red-400"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
 
-            // Combined Transactions
+            // Combined Transactions (latest first)
             let combined = [
                 ...income.map(i => ({...i, type: 'INCOME', color: 'text-green-600'})),
                 ...expense.map(e => ({...e, type: 'EXPENSE', color: 'text-red-600'}))
@@ -902,8 +931,9 @@
                 </tr>
             `).join('');
 
-            // Orders
-            document.getElementById('ordersTableBody').innerHTML = orders.map((item, i) => `
+            // Orders (latest first)
+            const sortedOrders = [...orders].sort((a,b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('ordersTableBody').innerHTML = sortedOrders.map((item, i) => `
                 <tr class="border-b">
                     <td class="p-3">${i+1}</td>
                     <td class="p-3 font-bold">${item.client}</td>
@@ -913,8 +943,8 @@
                     <td class="p-3 text-[10px] uppercase">${item.type}</td>
                     <td class="p-3 font-black text-green-600">${item.profit.toFixed(2)}</td>
                     <td class="p-3 text-center">
-                        <button onclick="toggleOrderModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteAcc('order', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button>
+                        <button onclick="toggleOrderModal(true, ${orders.indexOf(item)})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteAcc('order', ${orders.indexOf(item)})" class="text-red-400"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -1172,7 +1202,7 @@
             return str.trim() + ' Taka Only';
         }
 
-        // PDF Generation Layout (unchanged – exactly as original)
+        // PDF Generation Layout (unchanged – exactly as original, but with center alignment for columns 1,4,5,6)
         function downloadPDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -1206,6 +1236,13 @@
                 body: tableData, theme: 'grid',
                 styles: { textColor: [0, 0, 0], fontSize: 9, lineColor: [0, 0, 0], lineWidth: 0.1 },
                 headStyles: { fillColor: false, textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.1, lineColor: [0, 0, 0], halign: 'center' },
+                // 0-indexed columns: set columns 0(SL),3(Unit),4(Rate),5(Total) to center align
+                columnStyles: {
+                    0: { halign: 'center' },
+                    3: { halign: 'center' },
+                    4: { halign: 'center' },
+                    5: { halign: 'center' }
+                },
                 margin: { top: 40, bottom: 45 }, didDrawPage: (data) => { addHeaderAndFooter(data); }
             });
 
