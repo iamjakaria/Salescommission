@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Arvin Controls | Fire Safety Engineering</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -10,8 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
-        .tab-content { display: none; min-height: calc(150vh - 100px); }  /* increased vertical size by 50% (from 100vh to 150vh) */
+        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; }
+        .tab-content { display: none; min-height: calc(150vh - 100px); }
         .tab-content.active { display: flex; flex-direction: column; }
         .invoice-sub-tab, .accounts-sub-tab { display: none; }
         .invoice-sub-tab.active, .accounts-sub-tab.active { display: block; }
@@ -52,11 +52,90 @@
             100% { transform: translateY(0px); }
         }
         #moveTopBtn { display: none; }
+
+        /* login overlay */
+        #loginOverlay {
+            position: fixed; inset:0; background: white; z-index:10000;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(2px); padding: 1rem;
+        }
+        .login-card { max-width: 360px; width:100%; background:#fff; border-radius:2rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); padding:2rem 1.5rem; border:1px solid #fee2e2; }
+        .login-logo { width:80px; height:80px; background:#fee2e2; border-radius:40px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2.5rem; color:#dc2626; }
+        .login-input { border:1px solid #d1d5db; border-radius:2rem; padding:1rem 1.5rem; width:100%; font-size:1rem; margin-bottom:1rem; background:#f9fafb; }
+        .login-btn { background:#dc2626; color:white; border-radius:2rem; padding:1rem; font-weight:bold; width:100%; border:none; font-size:1.1rem; cursor:pointer; transition:0.2s; }
+        .login-btn:hover { background:#b91c1c; }
+        .logout-btn { position:fixed; top:8px; right:8px; z-index:10001; background:#ef4444; color:white; border:none; border-radius:40px; padding:0.5rem 1rem; font-size:13px; font-weight:bold; display:flex; align-items:center; gap:6px; box-shadow:0 4px 8px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.3); backdrop-filter:blur(4px); }
+        .logout-btn i { font-size:14px; }
+        body.logged-in #loginOverlay { display: none; }
+        body:not(.logged-in) .logout-btn { display: none; }
+        .logout-btn { display: none; }
+        body.logged-in .logout-btn { display: flex; }
+
+        /* new horizontal scroll cards for mobile */
+        .stats-scroll-x {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 0.75rem;
+            padding-bottom: 0.25rem;
+            scrollbar-width: thin;
+        }
+        .stats-scroll-x > div {
+            flex: 0 0 auto;
+            width: 45%;  /* approx two cards visible, then scroll */
+            min-width: 140px;
+        }
+        @media (min-width: 768px) {
+            .stats-scroll-x > div {
+                width: auto;
+                flex: 1 1 0;
+                min-width: 0;
+            }
+        }
+        /* tiny text on stats for mobile */
+        .stat-label {
+            font-size: 0.6rem;   /* ~9.6px */
+            line-height: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .stat-value {
+            font-size: 1rem;      /* 16px but bold enough */
+            line-height: 1.5rem;
+            font-weight: 800;
+        }
+        
+        /* Fix for modal close button conflict */
+        .modal-close-btn {
+            z-index: 101;
+            position: relative;
+        }
+
+        /* small delete icon for images */
+        .img-delete-icon { cursor: pointer; color: #dc2626; font-size: 12px; margin-left: 6px; }
+        .img-delete-icon:hover { color: #b91c1c; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <!-- Animated Move Top Button (colorful, floats, appears on every tab) -->
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay">
+        <div class="login-card">
+            <div class="login-logo"><i class="fas fa-fire-extinguisher"></i></div>
+            <h2 class="text-center text-2xl font-bold text-red-600 mb-6">ARVIN CONTROLS</h2>
+            <p class="text-center text-xs uppercase tracking-wider text-gray-500 mb-4">Fire Safety Engineering</p>
+            <input type="text" id="loginId" placeholder="Login ID" class="login-input" value="" autocomplete="off">
+            <input type="password" id="loginPass" placeholder="Password" class="login-input" autocomplete="off">
+            <button class="login-btn" onclick="performLogin()"><i class="fas fa-lock-open mr-2"></i> UNLOCK</button>
+            <p class="text-center text-[10px] text-gray-400 mt-4">authorised personnel only</p>
+        </div>
+    </div>
+
+    <!-- LOGOUT BUTTON (appears only after login) -->
+    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+
+    <!-- Animated Move Top Button (visible on tabs) -->
     <button id="moveTopBtn" class="move-top-btn" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
         <i class="fas fa-arrow-up"></i> <span>TOP</span>
     </button>
@@ -179,7 +258,7 @@
             </div>
         </div>
 
-        <!-- Inventory Tab with updated fields -->
+        <!-- Inventory Tab with updated fields AND horizontal scroll stats -->
         <div id="inventory" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-emerald-100">
                 <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
@@ -187,10 +266,20 @@
                 <div class="flex-none w-[75px] hidden md:block"></div>
             </div>
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100"><p class="text-[10px] font-bold text-emerald-600 uppercase">Total Items</p><p id="totalInvItems" class="text-2xl font-black">0</p></div>
-                    <div class="bg-orange-50 p-4 rounded-xl border border-orange-100"><p class="text-[10px] font-bold text-orange-600 uppercase">Low Stock</p><p id="lowStockCount" class="text-2xl font-black text-orange-600">0</p></div>
-                    <div class="bg-red-50 p-4 rounded-xl border border-red-100"><p class="text-[10px] font-bold text-red-600 uppercase">Out of Stock</p><p id="outStockCount" class="text-2xl font-black text-red-600">0</p></div>
+                <!-- stats horizontal scroll container -->
+                <div class="stats-scroll-x mb-6">
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                        <p class="stat-label text-emerald-600 uppercase">Total Items</p>
+                        <p id="totalInvItems" class="stat-value font-black">0</p>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-xl border border-orange-100">
+                        <p class="stat-label text-orange-600 uppercase">Low Stock</p>
+                        <p id="lowStockCount" class="stat-value font-black text-orange-600">0</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                        <p class="stat-label text-red-600 uppercase">Out of Stock</p>
+                        <p id="outStockCount" class="stat-value font-black text-red-600">0</p>
+                    </div>
                 </div>
                 <div class="table-container bg-gray-50 rounded-xl p-4 text-sm">
                     <table class="w-full text-left border-collapse">
@@ -201,7 +290,7 @@
             </div>
         </div>
 
-        <!-- ACCOUNTS (unchanged except sorting for latest data first) -->
+        <!-- ACCOUNTS with horizontal stats row on mobile -->
         <div id="accounts" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-purple-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -229,18 +318,19 @@
             </div>
 
             <div class="p-6">
-                <div id="accounts-stats" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div id="statCard1" class="p-4 rounded-xl border">
-                        <p id="statLabel1" class="text-[10px] font-bold uppercase">Total Income</p>
-                        <p id="statVal1" class="text-xl font-black">0.00</p>
+                <!-- stats horizontal scroll row for accounts -->
+                <div id="accounts-stats" class="stats-scroll-x mb-6">
+                    <div id="statCard1" class="p-3 rounded-xl border">
+                        <p id="statLabel1" class="stat-label font-bold uppercase">Total Income</p>
+                        <p id="statVal1" class="stat-value font-black">0.00</p>
                     </div>
-                    <div id="statCard2" class="p-4 rounded-xl border">
-                        <p id="statLabel2" class="text-[10px] font-bold uppercase">This Year</p>
-                        <p id="statVal2" class="text-xl font-black">0.00</p>
+                    <div id="statCard2" class="p-3 rounded-xl border">
+                        <p id="statLabel2" class="stat-label font-bold uppercase">This Year</p>
+                        <p id="statVal2" class="stat-value font-black">0.00</p>
                     </div>
-                    <div id="statCard3" class="p-4 rounded-xl border">
-                        <p id="statLabel3" class="text-[10px] font-bold uppercase">This Month</p>
-                        <p id="statVal3" class="text-xl font-black">0.00</p>
+                    <div id="statCard3" class="p-3 rounded-xl border">
+                        <p id="statLabel3" class="stat-label font-bold uppercase">This Month</p>
+                        <p id="statVal3" class="stat-value font-black">0.00</p>
                     </div>
                 </div>
 
@@ -374,7 +464,7 @@
             </div>
         </div>
 
-        <!-- SETTINGS unchanged -->
+        <!-- SETTINGS with delete options -->
         <div id="settings" class="tab-content bg-white">
             <div class="p-6">
                 <div class="flex items-center mb-6">
@@ -403,21 +493,25 @@
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase">Signatory Name</label><input type="text" id="setSignatoryName" class="w-full border-b-2 border-purple-200 bg-transparent py-1"></div>
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase">Designation</label><input type="text" id="setSignatoryDesig" class="w-full border-b-2 border-purple-200 bg-transparent py-1"></div>
                         </div>
+                        <!-- Image upload with delete buttons -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Company Logo</label>
                                 <input type="file" id="setLogo" accept="image/*" class="text-[9px] w-full">
-                                <div id="logoPreview" class="mt-2 h-10 w-10 border bg-white rounded flex items-center justify-center overflow-hidden"><i class="fas fa-image text-gray-300"></i></div>
+                                <div id="logoPreview" class="mt-2 h-12 w-12 border bg-white rounded flex items-center justify-center overflow-hidden relative"><i class="fas fa-image text-gray-300"></i></div>
+                                <button type="button" onclick="deleteImage('logo')" class="img-delete-icon mt-1"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Company Seal</label>
                                 <input type="file" id="setSeal" accept="image/*" class="text-[9px] w-full">
-                                <div id="sealPreview" class="mt-2 h-10 w-10 border bg-white rounded flex items-center justify-center overflow-hidden"><i class="fas fa-stamp text-gray-300"></i></div>
+                                <div id="sealPreview" class="mt-2 h-12 w-12 border bg-white rounded flex items-center justify-center overflow-hidden relative"><i class="fas fa-stamp text-gray-300"></i></div>
+                                <button type="button" onclick="deleteImage('seal')" class="img-delete-icon mt-1"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                             <div>
                                 <label class="text-[10px] font-bold text-gray-500 uppercase block mb-1">Signatory Sign</label>
                                 <input type="file" id="setSign" accept="image/*" class="text-[9px] w-full">
-                                <div id="signPreview" class="mt-2 h-10 w-10 border bg-white rounded flex items-center justify-center overflow-hidden"><i class="fas fa-signature text-gray-300"></i></div>
+                                <div id="signPreview" class="mt-2 h-12 w-12 border bg-white rounded flex items-center justify-center overflow-hidden relative"><i class="fas fa-signature text-gray-300"></i></div>
+                                <button type="button" onclick="deleteImage('sign')" class="img-delete-icon mt-1"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                         </div>
                     </div>
@@ -489,10 +583,13 @@
         </div>
     </main>
 
-    <!-- Modals - Updated with new fields -->
+    <!-- Modals - Updated with new fields and fixed close button -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div class="bg-red-600 p-4 text-white flex justify-between items-center"><h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3><button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+            <div class="bg-red-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
+                <h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3>
+                <button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+            </div>
             <form id="clientForm" class="p-6 space-y-4">
                 <input type="hidden" id="editClientIndex" value="-1">
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="clientSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
@@ -508,8 +605,11 @@
     </div>
 
     <div id="productModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div class="bg-orange-600 p-4 text-white flex justify-between items-center"><h3 id="productModalTitle" class="font-bold uppercase">Add Product</h3><button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
+            <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
+                <h3 id="productModalTitle" class="font-bold uppercase">Add Product</h3>
+                <button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+            </div>
             <form id="productForm" class="p-6 space-y-4">
                 <input type="hidden" id="editProductIndex" value="-1">
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="productSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
@@ -525,7 +625,10 @@
 
     <div id="supplierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div class="bg-blue-600 p-4 text-white flex justify-between"><h3 class="font-bold uppercase">Supplier</h3><button onclick="toggleSupplierModal(false)" class="text-white text-2xl">&times;</button></div>
+            <div class="bg-blue-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
+                <h3 class="font-bold uppercase">Supplier</h3>
+                <button onclick="toggleSupplierModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
+            </div>
             <form id="supplierForm" class="p-6 space-y-4">
                 <input type="hidden" id="editSupplierIndex" value="-1">
                 <div><label class="text-[10px] font-bold">SL</label><input type="text" id="supplierSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
@@ -544,9 +647,9 @@
     <!-- ITEM MODAL – same as original -->
     <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md">
-            <div class="bg-yellow-500 p-4 text-white flex justify-between items-center">
+            <div class="bg-yellow-500 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Add Item to Invoice</h3>
-                <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
             </div>
             <form id="itemForm" onsubmit="event.preventDefault(); addItemToInvoice();" class="p-6 space-y-4">
                 <div class="autocomplete-wrapper">
@@ -567,7 +670,7 @@
     <!-- Account Modal (unchanged) -->
     <div id="accModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md">
-            <div id="accModalHeader" class="p-4 text-white flex justify-between items-center"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+            <div id="accModalHeader" class="p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
             <form id="accForm" class="p-6 space-y-4">
                 <input type="hidden" id="accType" value="income">
                 <input type="hidden" id="editAccIndex" value="-1">
@@ -581,7 +684,7 @@
 
     <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md">
-            <div class="bg-orange-600 p-4 text-white flex justify-between"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white text-2xl">&times;</button></div>
+            <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
             <form id="orderForm" class="p-6 space-y-4">
                 <input type="hidden" id="editOrderIndex" value="-1">
                 <div><label class="text-[10px] font-bold">Client</label><input type="text" id="orderClient" required class="w-full border py-2 px-3"></div>
@@ -595,25 +698,68 @@
     </div>
 
     <script>
-        // Data Store (exactly as original)
-        let clients = JSON.parse(localStorage.getItem('arvin_clients_list')) || [];
-        let products = JSON.parse(localStorage.getItem('arvin_products_list')) || [];
-        let suppliers = JSON.parse(localStorage.getItem('arvin_suppliers_list')) || [];
-        let invoices = JSON.parse(localStorage.getItem('arvin_invoices_list')) || [];
-        let income = JSON.parse(localStorage.getItem('arvin_income_list')) || [];
-        let expense = JSON.parse(localStorage.getItem('arvin_expense_list')) || [];
-        let orders = JSON.parse(localStorage.getItem('arvin_orders_list')) || [];
-        
-        let settings = JSON.parse(localStorage.getItem('arvin_settings')) || {
-            company: 'ARVIN CONTROLS',
-            slogan: 'FIRE SAFETY ENGINEERING & CONSULTANT',
-            address: 'Dhaka, Bangladesh',
-            email: '', mobile: '', website: '',
-            signatory: '', designation: '',
-            logo: '', seal: '', sign: '',
-            terms_quot: '', terms_inv: '', terms_challan: '', terms_po: ''
+        // LOGIN SYSTEM (ID: 1234@ , PASS: @1234) – keep logged in until manual logout
+        function performLogin() {
+            const loginId = document.getElementById('loginId').value.trim();
+            const loginPass = document.getElementById('loginPass').value.trim();
+            if (loginId === '1234@' && loginPass === '@1234') {
+                document.body.classList.add('logged-in');
+                // store flag in session? we use body class to persist, but page reload would lose. to keep logged in after reload we set localStorage flag.
+                localStorage.setItem('arvin_logged_in', 'yes');
+                loadAllData();
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+        function logout() {
+            document.body.classList.remove('logged-in');
+            localStorage.removeItem('arvin_logged_in');
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPass').value = '';
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('nav-grid').classList.remove('hidden');
+            document.getElementById('moveTopBtn').style.display = 'none';
+        }
+        window.onload = function() {
+            if (localStorage.getItem('arvin_logged_in') === 'yes') {
+                document.body.classList.add('logged-in');
+                loadAllData();
+            } else {
+                // show overlay
+            }
         };
+        function loadAllData() {
+            clients = JSON.parse(localStorage.getItem('arvin_clients_list')) || [];
+            products = JSON.parse(localStorage.getItem('arvin_products_list')) || [];
+            suppliers = JSON.parse(localStorage.getItem('arvin_suppliers_list')) || [];
+            invoices = JSON.parse(localStorage.getItem('arvin_invoices_list')) || [];
+            income = JSON.parse(localStorage.getItem('arvin_income_list')) || [];
+            expense = JSON.parse(localStorage.getItem('arvin_expense_list')) || [];
+            orders = JSON.parse(localStorage.getItem('arvin_orders_list')) || [];
+            settings = JSON.parse(localStorage.getItem('arvin_settings')) || {
+                company: 'ARVIN CONTROLS',
+                slogan: 'FIRE SAFETY ENGINEERING & CONSULTANT',
+                address: 'Dhaka, Bangladesh',
+                email: '', mobile: '', website: '',
+                signatory: '', designation: '',
+                logo: '', seal: '', sign: '',
+                terms_quot: '', terms_inv: '', terms_challan: '', terms_po: ''
+            };
+            currentInvoiceItems = [];
+            selectedClientIndex = -1;
+            activeAccountsTab = 'transactions';
+            renderClients();
+            renderProducts();
+            renderSuppliers();
+            renderSavedInvoices();
+            loadSettingsFields();
+            updateUINames();
+            showDashboard();
+        }
 
+        // Data store variables (already declared above functions)
+        let clients = [], products = [], suppliers = [], invoices = [], income = [], expense = [], orders = [];
+        let settings = {};
         let currentInvoiceItems = [];
         let selectedClientIndex = -1;
         let activeAccountsTab = 'transactions';
@@ -636,37 +782,35 @@
             return `${day}${suffix} ${month}, ${year}`;
         }
 
-        window.onload = () => {
-            renderClients();
-            renderProducts();
-            renderSuppliers();
-            renderSavedInvoices();
-            loadSettingsFields();
-            updateUINames();
-        };
-
         function updateUINames() {
-            document.getElementById('nav-company-name').innerText = settings.company;
+            document.getElementById('nav-company-name').innerText = settings.company || 'ARVIN CONTROLS';
         }
 
         // Settings Logic
         function loadSettingsFields() {
-            document.getElementById('setCompanyName').value = settings.company;
-            document.getElementById('setSlogan').value = settings.slogan;
-            document.getElementById('setAddress').value = settings.address;
-            document.getElementById('setEmail').value = settings.email;
-            document.getElementById('setMobile').value = settings.mobile;
-            document.getElementById('setWebsite').value = settings.website;
-            document.getElementById('setSignatoryName').value = settings.signatory;
-            document.getElementById('setSignatoryDesig').value = settings.designation;
-            document.getElementById('termsQuotation').value = settings.terms_quot;
-            document.getElementById('termsInvoice').value = settings.terms_inv;
-            document.getElementById('termsChallan').value = settings.terms_challan;
-            document.getElementById('termsPO').value = settings.terms_po;
+            document.getElementById('setCompanyName').value = settings.company || '';
+            document.getElementById('setSlogan').value = settings.slogan || '';
+            document.getElementById('setAddress').value = settings.address || '';
+            document.getElementById('setEmail').value = settings.email || '';
+            document.getElementById('setMobile').value = settings.mobile || '';
+            document.getElementById('setWebsite').value = settings.website || '';
+            document.getElementById('setSignatoryName').value = settings.signatory || '';
+            document.getElementById('setSignatoryDesig').value = settings.designation || '';
+            document.getElementById('termsQuotation').value = settings.terms_quot || '';
+            document.getElementById('termsInvoice').value = settings.terms_inv || '';
+            document.getElementById('termsChallan').value = settings.terms_challan || '';
+            document.getElementById('termsPO').value = settings.terms_po || '';
 
-            if(settings.logo) document.getElementById('logoPreview').innerHTML = `<img src="${settings.logo}" class="h-full w-full object-contain">`;
-            if(settings.seal) document.getElementById('sealPreview').innerHTML = `<img src="${settings.seal}" class="h-full w-full object-contain">`;
-            if(settings.sign) document.getElementById('signPreview').innerHTML = `<img src="${settings.sign}" class="h-full w-full object-contain">`;
+            if(settings.logo) document.getElementById('logoPreview').innerHTML = `<img src="${settings.logo}" class="h-full w-full object-contain">`; else document.getElementById('logoPreview').innerHTML = '<i class="fas fa-image text-gray-300"></i>';
+            if(settings.seal) document.getElementById('sealPreview').innerHTML = `<img src="${settings.seal}" class="h-full w-full object-contain">`; else document.getElementById('sealPreview').innerHTML = '<i class="fas fa-stamp text-gray-300"></i>';
+            if(settings.sign) document.getElementById('signPreview').innerHTML = `<img src="${settings.sign}" class="h-full w-full object-contain">`; else document.getElementById('signPreview').innerHTML = '<i class="fas fa-signature text-gray-300"></i>';
+        }
+
+        // Delete image functions
+        function deleteImage(type) {
+            if (type === 'logo') { settings.logo = ''; document.getElementById('logoPreview').innerHTML = '<i class="fas fa-image text-gray-300"></i>'; }
+            if (type === 'seal') { settings.seal = ''; document.getElementById('sealPreview').innerHTML = '<i class="fas fa-stamp text-gray-300"></i>'; }
+            if (type === 'sign') { settings.sign = ''; document.getElementById('signPreview').innerHTML = '<i class="fas fa-signature text-gray-300"></i>'; }
         }
 
         async function saveSettings() {
@@ -821,11 +965,11 @@
             const title = document.getElementById('accModalTitle');
 
             if(type === 'income') {
-                header.className = 'p-4 text-white flex justify-between items-center bg-green-600';
+                header.className = 'p-4 text-white flex justify-between items-center bg-green-600 sticky top-0 z-10';
                 submit.className = 'w-full bg-green-600 text-white font-bold py-3 rounded-lg uppercase shadow-lg';
                 title.innerText = idx > -1 ? 'Edit Income' : 'Add Income';
             } else {
-                header.className = 'p-4 text-white flex justify-between items-center bg-red-600';
+                header.className = 'p-4 text-white flex justify-between items-center bg-red-600 sticky top-0 z-10';
                 submit.className = 'w-full bg-red-600 text-white font-bold py-3 rounded-lg uppercase shadow-lg';
                 title.innerText = idx > -1 ? 'Edit Expense' : 'Add Expense';
             }
@@ -1010,8 +1154,11 @@
             const cards = ['statCard1', 'statCard2', 'statCard3'];
             cards.forEach(id => {
                 const el = document.getElementById(id);
-                el.className = `p-4 rounded-xl border ${bgColor} ${borderColor}`;
-                el.querySelector('p:first-child').className = `text-[10px] font-bold uppercase ${textColor}`;
+                el.className = `p-3 rounded-xl border ${bgColor} ${borderColor}`;
+                const labelEl = el.querySelector('p:first-child');
+                if(labelEl) labelEl.className = `stat-label font-bold uppercase ${textColor}`;
+                const valEl = el.querySelector('p:last-child');
+                if(valEl) valEl.className = `stat-value font-black ${textColor}`;
             });
         }
 
@@ -1298,7 +1445,7 @@
             return str.trim() + ' Taka Only';
         }
 
-        // PDF Generation Layout (unchanged – exactly as original, but with center alignment for columns 1,4,5,6)
+        // PDF Generation Layout - Updated with centered logo, reduced logo size, tighter header line spacing
         function downloadPDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -1306,58 +1453,137 @@
             const clientData = clients.find(c => c.name === inv.client) || { address: 'N/A', mobile: 'N/A' };
 
             const addHeaderAndFooter = (data) => {
-                if(settings.logo) { try { doc.addImage(settings.logo, 'PNG', 14, 10, 20, 20); } catch(e){} }
-                doc.setFontSize(22); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.text(settings.company, 14, 20);
-                doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text(settings.slogan, 14, 25);
-                doc.text(settings.address, 14, 29); doc.text(`Email: ${settings.email} | Mobile: ${settings.mobile}`, 14, 33);
-                doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("INVOICE", 196, 20, { align: "right" });
-                doc.setDrawColor(0, 0, 0); doc.setLineWidth(0.5); doc.line(14, 36, 196, 36);
+                // Company Logo - smaller (15x15) and positioned higher
+                if(settings.logo) { 
+                    try { 
+                        // Logo size reduced to 15mm, placed at (95, 3)
+                        doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); 
+                    } catch(e){} 
+                }
+                
+                // Company Name centered, moved up slightly (y=20 instead of 28)
+                doc.setFontSize(16); 
+                doc.setTextColor(0, 0, 0); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text(settings.company, 105, 22, { align: "center" });
+                
+                // Address line spacing reduced (y=26 from 33)
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(settings.address, 105, 26, { align: "center" });
+                
+                // Contact line - tighter (y=30 from 38)
+                const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
+                doc.text(contactLine, 105, 30, { align: "center" });
+                
+                // INVOICE title on right
+                doc.setFontSize(18); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text("INVOICE", 196, 16, { align: "right" });
+                
+                // Horizontal line - moved up slightly (y=34 from 42)
+                doc.setDrawColor(0, 0, 0); 
+                doc.setLineWidth(0.5); 
+                doc.line(14, 34, 196, 34);
+                
+                // Page footer
                 const pageCount = doc.internal.getNumberOfPages();
-                doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
                 doc.text("Thank you for your business!", 105, 288, { align: "center" });
             };
 
-            doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.text("BILL TO:", 14, 45);
-            doc.setFont("helvetica", "normal"); doc.text(inv.client, 14, 50); doc.text(clientData.address, 14, 55, { maxWidth: 80 }); doc.text("Contact: " + clientData.mobile, 14, 65);
-            doc.setFont("helvetica", "bold"); doc.text("INVOICE DETAILS:", 130, 45);
-            doc.setFont("helvetica", "normal"); doc.text(`Invoice No: ${inv.id}`, 130, 50); doc.text(`Date: ${formatFriendlyDate(inv.date)}`, 130, 55); doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 130, 60);
+            doc.setFontSize(10); 
+            doc.setFont("helvetica", "bold"); 
+            doc.text("BILL TO:", 14, 42); // reduced from 50
+            doc.setFont("helvetica", "normal"); 
+            doc.text(inv.client, 14, 47); 
+            doc.text(clientData.address, 14, 52, { maxWidth: 80 }); 
+            doc.text("Contact: " + clientData.mobile, 14, 60);
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("INVOICE DETAILS:", 130, 42);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(`Invoice No: ${inv.id}`, 130, 47); 
+            doc.text(`Date: ${formatFriendlyDate(inv.date)}`, 130, 52); 
+            doc.text(`Order ID: ${inv.orderId || 'N/A'}`, 130, 57);
 
-            let currentY = 75;
-            if (inv.subject) { doc.setFont("helvetica", "bold"); doc.text("Subject: " + inv.subject, 14, currentY, { maxWidth: 180 }); currentY += 8; }
+            let currentY = 70; // reduced from 80
+            if (inv.subject) { 
+                doc.setFont("helvetica", "bold"); 
+                doc.text("Subject: " + inv.subject, 14, currentY, { maxWidth: 180 }); 
+                currentY += 6; // smaller increment
+            }
+            
             const tableData = inv.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.unit || 'Pcs', item.price, item.total]);
 
             doc.autoTable({
                 startY: currentY,
                 head: [['SL', 'Items', 'Description', 'Unit', 'Rate', 'Total']],
-                body: tableData, theme: 'grid',
+                body: tableData, 
+                theme: 'grid',
                 styles: { textColor: [0, 0, 0], fontSize: 9, lineColor: [0, 0, 0], lineWidth: 0.1 },
                 headStyles: { fillColor: false, textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.1, lineColor: [0, 0, 0], halign: 'center' },
-                // 0-indexed columns: set columns 0(SL),3(Unit),4(Rate),5(Total) to center align
                 columnStyles: {
                     0: { halign: 'center' },
                     3: { halign: 'center' },
                     4: { halign: 'center' },
                     5: { halign: 'center' }
                 },
-                margin: { top: 40, bottom: 45 }, didDrawPage: (data) => { addHeaderAndFooter(data); }
+                margin: { top: 38, bottom: 45 }, // top margin reduced accordingly
+                didDrawPage: (data) => { addHeaderAndFooter(data); }
             });
 
-            let finalY = doc.lastAutoTable.finalY + 8;
-            if (finalY > 230) { doc.addPage(); finalY = 45; }
-            doc.setFont("helvetica", "bold"); doc.text("Amount in Words:", 14, finalY);
-            doc.setFont("helvetica", "normal"); doc.text(numberToWords(Math.round(parseFloat(inv.total))), 14, finalY + 5, { maxWidth: 100 });
-            doc.setFont("helvetica", "bold"); doc.text("Grand Total:", 140, finalY); doc.text(inv.total, 196, finalY, { align: "right" });
-            doc.setFont("helvetica", "normal"); doc.text("Paid Amount:", 140, finalY + 7); doc.text(inv.paid || "0.00", 196, finalY + 7, { align: "right" });
-            doc.setFont("helvetica", "bold"); doc.text("Due Amount:", 140, finalY + 14); doc.text(inv.due || "0.00", 196, finalY + 14, { align: "right" });
+            let finalY = doc.lastAutoTable.finalY + 6; // reduced spacing
+            if (finalY > 235) { doc.addPage(); finalY = 45; }
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Amount in Words:", 14, finalY);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(numberToWords(Math.round(parseFloat(inv.total))), 14, finalY + 5, { maxWidth: 100 });
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Grand Total:", 140, finalY); 
+            doc.text(inv.total, 196, finalY, { align: "right" });
+            
+            doc.setFont("helvetica", "normal"); 
+            doc.text("Paid Amount:", 140, finalY + 6); 
+            doc.text(inv.paid || "0.00", 196, finalY + 6, { align: "right" });
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Due Amount:", 140, finalY + 12); 
+            doc.text(inv.due || "0.00", 196, finalY + 12, { align: "right" });
 
-            finalY += 22; doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.text("TERMS & CONDITIONS:", 14, finalY);
-            doc.setFont("helvetica", "normal"); doc.text(settings.terms_inv || "1. Payment should be made via check/cash. 2. Goods once sold are not returnable.", 14, finalY + 4, { maxWidth: 120 });
+            finalY += 18; 
+            doc.setFontSize(8); 
+            doc.setFont("helvetica", "bold"); 
+            doc.text("TERMS & CONDITIONS:", 14, finalY);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(settings.terms_inv || "1. Payment should be made via check/cash. 2. Goods once sold are not returnable.", 14, finalY + 4, { maxWidth: 120 });
 
+            // Signature section with seal centered horizontally
             let sigY = finalY - 5;
-            if(settings.seal) { try { doc.addImage(settings.seal, 'PNG', 150, sigY, 25, 25); } catch(e){} }
-            if(settings.sign) { try { doc.addImage(settings.sign, 'PNG', 155, sigY + 20, 30, 10); } catch(e){} }
-            doc.setFont("helvetica", "bold"); doc.text("Authorized Signature", 150, sigY + 35);
-            doc.setFont("helvetica", "normal"); doc.text(settings.signatory, 150, sigY + 39); doc.text(settings.designation, 150, sigY + 43);
+            
+            // Seal centered horizontally (between 105-110)
+            if(settings.seal) { 
+                try { 
+                    doc.addImage(settings.seal, 'PNG', 105, sigY, 18, 18); 
+                } catch(e){} 
+            }
+            
+            // Sign and signature line
+            if(settings.sign) { 
+                try { 
+                    doc.addImage(settings.sign, 'PNG', 155, sigY + 20, 30, 10); 
+                } catch(e){} 
+            }
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Authorized Signature", 150, sigY + 35);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(settings.signatory, 150, sigY + 39); 
+            doc.text(settings.designation, 150, sigY + 43);
 
             doc.save(`${inv.id}_${inv.client}.pdf`);
         }
