@@ -125,7 +125,7 @@
     </nav>
 
     <main class="w-full">
-        <!-- existing tabs (clients, products, suppliers, inventory, invoice, accounts, settings) remain exactly the same, code unchanged -->
+        <!-- Clients Tab with updated fields -->
         <div id="clients" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-red-100">
                 <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-red-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
@@ -136,13 +136,14 @@
                 <input type="text" id="clientSearch" onkeyup="filterClients()" placeholder="Search clients..." class="w-full mb-4 pl-4 pr-4 py-2 border border-gray-200 rounded-lg">
                 <div class="table-container bg-gray-50 rounded-xl p-4">
                     <table class="w-full text-left border-collapse text-sm">
-                        <thead><tr class="text-red-600 border-b-2 border-red-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Clients</th><th class="p-3">Address</th><th class="p-3">Contact</th><th class="p-3">Mobile</th><th class="p-3 text-center">Action</th></tr></thead>
+                        <thead><tr class="text-red-600 border-b-2 border-red-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Clients</th><th class="p-3">Address</th><th class="p-3">Contact Person</th><th class="p-3">Designation</th><th class="p-3">Mobile</th><th class="p-3">Email</th><th class="p-3 text-center">Action</th></tr></thead>
                         <tbody id="clientTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- Products Tab with updated fields -->
         <div id="products" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-orange-100">
                 <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-orange-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
@@ -153,33 +154,37 @@
                 <input type="text" id="productSearch" onkeyup="filterProducts()" placeholder="Search products..." class="w-full mb-4 pl-4 pr-4 py-2 border border-gray-200 rounded-lg">
                 <div class="table-container bg-gray-50 rounded-xl p-4 text-sm">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="text-orange-600 border-b-2 border-orange-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Unit</th><th class="p-3">Rate</th><th class="p-3">Stock</th><th class="p-3 text-center">Action</th></tr></thead>
+                        <thead><tr class="text-orange-600 border-b-2 border-orange-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Unit</th><th class="p-3">Rate</th><th class="p-3">Stock Qty</th><th class="p-3 text-center">Action</th></tr></thead>
                         <tbody id="productTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- Suppliers Tab with updated fields -->
         <div id="suppliers" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-blue-100">
                 <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
                 <div class="flex-grow flex justify-center"><button onclick="toggleSupplierModal(true)" class="bg-blue-600 text-white px-8 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md"><i class="fas fa-plus mr-1"></i> ADD SUPPLIER</button></div>
+                <div class="flex-none w-[75px] hidden md:block"></div>
             </div>
             <div class="p-6">
                 <input type="text" id="supplierSearch" onkeyup="filterTable('supplierTableBody', this.value)" placeholder="Search suppliers..." class="w-full mb-4 px-4 py-2 border border-gray-200 rounded-lg">
                 <div class="table-container bg-gray-50 rounded-xl p-4 text-sm">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="text-blue-600 border-b-2 border-blue-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Supplier Name</th><th class="p-3">Contact Person</th><th class="p-3">Mobile</th><th class="p-3 text-center">Action</th></tr></thead>
+                        <thead><tr class="text-blue-600 border-b-2 border-blue-200 uppercase text-xs"><th class="p-3">SL</th><th class="p-3">Supplier</th><th class="p-3">Address</th><th class="p-3">Type</th><th class="p-3">Contact Person</th><th class="p-3">Designation</th><th class="p-3">Mobile</th><th class="p-3">Email</th><th class="p-3 text-center">Action</th></tr></thead>
                         <tbody id="supplierTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- Inventory Tab with updated fields -->
         <div id="inventory" class="tab-content bg-white">
             <div class="flex items-center p-6 border-b border-emerald-100">
                 <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-emerald-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
                 <h2 class="flex-grow text-center font-bold text-emerald-700 uppercase tracking-widest">STOCK STATUS</h2>
+                <div class="flex-none w-[75px] hidden md:block"></div>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -189,7 +194,7 @@
                 </div>
                 <div class="table-container bg-gray-50 rounded-xl p-4 text-sm">
                     <table class="w-full text-left border-collapse">
-                        <thead><tr class="text-emerald-600 border-b-2 border-emerald-200 uppercase text-xs"><th class="p-3">Product</th><th class="p-3">Current Stock</th><th class="p-3">Status</th></tr></thead>
+                        <thead><tr class="text-emerald-600 border-b-2 border-emerald-200 uppercase text-xs"><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Stock Qty</th><th class="p-3">Status</th></tr></thead>
                         <tbody id="inventoryTableBody"></tbody>
                     </table>
                 </div>
@@ -484,17 +489,19 @@
         </div>
     </main>
 
-    <!-- Modals (identical to original) -->
+    <!-- Modals - Updated with new fields -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center"><h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3><button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
             <form id="clientForm" class="p-6 space-y-4">
                 <input type="hidden" id="editClientIndex" value="-1">
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="clientSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Client Name</label><input type="text" id="clientName" required class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Clients</label><input type="text" id="clientName" required class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Address</label><input type="text" id="address" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Contact Person</label><input type="text" id="contactPerson" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Designation</label><input type="text" id="designation" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Mobile</label><input type="text" id="mobile" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Email</label><input type="email" id="email" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <button type="submit" class="w-full bg-red-600 text-white font-bold py-2 rounded-lg uppercase shadow-md">Save Client</button>
             </form>
         </div>
@@ -506,24 +513,29 @@
             <form id="productForm" class="p-6 space-y-4">
                 <input type="hidden" id="editProductIndex" value="-1">
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="productSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Item Name</label><input type="text" id="itemName" required class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Items</label><input type="text" id="itemName" required class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="description" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="unit" placeholder="e.g. Pcs, Box" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Rate (৳)</label><input type="number" id="rate" step="0.01" class="w-full border-b-2 border-gray-200 py-1"></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Stock Quantity</label><input type="number" id="stockQty" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Stock Qty</label><input type="number" id="stockQty" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <button type="submit" class="w-full bg-orange-600 text-white font-bold py-2 rounded-lg uppercase shadow-md">Save Product</button>
             </form>
         </div>
     </div>
 
     <div id="supplierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md">
+        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="bg-blue-600 p-4 text-white flex justify-between"><h3 class="font-bold uppercase">Supplier</h3><button onclick="toggleSupplierModal(false)" class="text-white text-2xl">&times;</button></div>
             <form id="supplierForm" class="p-6 space-y-4">
                 <input type="hidden" id="editSupplierIndex" value="-1">
-                <div><label class="text-[10px] font-bold">Name</label><input type="text" id="suppName" required class="w-full border py-2 px-3"></div>
-                <div><label class="text-[10px] font-bold">Contact Person</label><input type="text" id="suppPerson" class="w-full border py-2 px-3"></div>
-                <div><label class="text-[10px] font-bold">Mobile</label><input type="text" id="suppMobile" class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">SL</label><input type="text" id="supplierSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
+                <div><label class="text-[10px] font-bold">Supplier</label><input type="text" id="suppName" required class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Address</label><input type="text" id="suppAddress" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Type</label><input type="text" id="suppType" placeholder="e.g. Wholesale, Retail" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Contact Person</label><input type="text" id="suppPerson" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Designation</label><input type="text" id="suppDesignation" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Mobile</label><input type="text" id="suppMobile" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold">Email</label><input type="email" id="suppEmail" class="w-full border-b-2 border-gray-200 py-1"></div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save</button>
             </form>
         </div>
@@ -708,36 +720,50 @@
             document.getElementById('moveTopBtn').style.display = 'none';
         }
 
-        // Supplier Logic (unchanged)
+        // Supplier Logic (updated)
         function toggleSupplierModal(s, idx=-1) {
             document.getElementById('supplierModal').classList.toggle('hidden', !s);
             if(s && idx > -1) {
                 const sp = suppliers[idx];
                 document.getElementById('editSupplierIndex').value = idx;
+                document.getElementById('supplierSl').value = idx + 1;
                 document.getElementById('suppName').value = sp.name;
-                document.getElementById('suppPerson').value = sp.person;
-                document.getElementById('suppMobile').value = sp.mobile;
+                document.getElementById('suppAddress').value = sp.address || '';
+                document.getElementById('suppType').value = sp.type || '';
+                document.getElementById('suppPerson').value = sp.person || '';
+                document.getElementById('suppDesignation').value = sp.designation || '';
+                document.getElementById('suppMobile').value = sp.mobile || '';
+                document.getElementById('suppEmail').value = sp.email || '';
             } else if (s) {
                 document.getElementById('supplierForm').reset();
                 document.getElementById('editSupplierIndex').value = -1;
+                document.getElementById('supplierSl').value = suppliers.length + 1;
             }
         }
 
         document.getElementById('supplierForm').onsubmit = (e) => {
             e.preventDefault();
             const idx = parseInt(document.getElementById('editSupplierIndex').value);
-            const data = { name: document.getElementById('suppName').value, person: document.getElementById('suppPerson').value, mobile: document.getElementById('suppMobile').value };
+            const data = { 
+                name: document.getElementById('suppName').value,
+                address: document.getElementById('suppAddress').value || '',
+                type: document.getElementById('suppType').value || '',
+                person: document.getElementById('suppPerson').value || '',
+                designation: document.getElementById('suppDesignation').value || '',
+                mobile: document.getElementById('suppMobile').value || '',
+                email: document.getElementById('suppEmail').value || ''
+            };
             if(idx > -1) suppliers[idx] = data; else suppliers.push(data);
             localStorage.setItem('arvin_suppliers_list', JSON.stringify(suppliers));
             renderSuppliers(); toggleSupplierModal(false);
         };
 
         function renderSuppliers() {
-            document.getElementById('supplierTableBody').innerHTML = suppliers.map((s, i) => `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3 font-bold">${s.name}</td><td class="p-3">${s.person}</td><td class="p-3">${s.mobile}</td><td class="p-3 text-center"><button onclick="toggleSupplierModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteSupp(${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            document.getElementById('supplierTableBody').innerHTML = suppliers.map((s, i) => `<tr class="border-b"><td class="p-3 font-bold text-blue-600">${i+1}</td><td class="p-3 font-bold">${s.name}</td><td class="p-3">${s.address || ''}</td><td class="p-3">${s.type || ''}</td><td class="p-3">${s.person || ''}</td><td class="p-3">${s.designation || ''}</td><td class="p-3">${s.mobile || ''}</td><td class="p-3">${s.email || ''}</td><td class="p-3 text-center"><button onclick="toggleSupplierModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteSupp(${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
         function deleteSupp(i) { if(confirm('Delete?')) { suppliers.splice(i,1); localStorage.setItem('arvin_suppliers_list', JSON.stringify(suppliers)); renderSuppliers(); }}
 
-        // Inventory Logic
+        // Inventory Logic (updated)
         function renderInventory() {
             let low = 0, out = 0;
             document.getElementById('inventoryTableBody').innerHTML = products.map(p => {
@@ -745,7 +771,7 @@
                 let status = '<span class="text-green-600 font-bold">In Stock</span>';
                 if(stock <= 0) { status = '<span class="text-red-600 font-bold">Out of Stock</span>'; out++; }
                 else if(stock < 5) { status = '<span class="text-orange-600 font-bold">Low Stock</span>'; low++; }
-                return `<tr class="border-b"><td class="p-3"><b>${p.item}</b></td><td class="p-3">${stock} ${p.unit}</td><td class="p-3 text-xs uppercase">${status}</td></tr>`;
+                return `<tr class="border-b"><td class="p-3"><b>${p.item}</b></td><td class="p-3 text-xs">${p.desc || ''}</td><td class="p-3 font-bold">${stock} ${p.unit}</td><td class="p-3 text-xs uppercase">${status}</td></tr>`;
             }).join('');
             document.getElementById('totalInvItems').innerText = products.length;
             document.getElementById('lowStockCount').innerText = low;
@@ -1010,23 +1036,93 @@
 
         function startNewInvoiceTab() { initInvoiceFields(); switchInvoiceSubTab('create'); }
 
+        // Updated client render with new fields
         function renderClients() {
-            document.getElementById('clientTableBody').innerHTML = clients.map((c, i) => `<tr class="border-b"><td class="p-3 font-bold text-red-600">${i+1}</td><td class="p-3">${c.name}</td><td class="p-3 text-xs">${c.address}</td><td class="p-3">${c.person}</td><td class="p-3">${c.mobile}</td><td class="p-3 text-center"><button onclick="toggleClientModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteItem('clients', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            document.getElementById('clientTableBody').innerHTML = clients.map((c, i) => `<tr class="border-b"><td class="p-3 font-bold text-red-600">${i+1}</td><td class="p-3">${c.name}</td><td class="p-3 text-xs">${c.address}</td><td class="p-3">${c.person}</td><td class="p-3">${c.designation || ''}</td><td class="p-3">${c.mobile}</td><td class="p-3">${c.email || ''}</td><td class="p-3 text-center"><button onclick="toggleClientModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteItem('clients', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
+
+        // Updated client modal toggle
         function toggleClientModal(s, idx=-1) {
             const m = document.getElementById('clientModal'); m.classList.toggle('hidden', !s);
-            if(s) { if(idx>-1) { const c=clients[idx]; document.getElementById('clientModalTitle').innerText="Edit Client"; document.getElementById('editClientIndex').value=idx; document.getElementById('clientSl').value=idx+1; document.getElementById('clientName').value=c.name; document.getElementById('address').value=c.address; document.getElementById('contactPerson').value=c.person; document.getElementById('mobile').value=c.mobile; } else { document.getElementById('clientForm').reset(); document.getElementById('clientSl').value=clients.length+1; document.getElementById('editClientIndex').value=-1; }}
+            if(s) { 
+                if(idx>-1) { 
+                    const c=clients[idx]; 
+                    document.getElementById('clientModalTitle').innerText="Edit Client"; 
+                    document.getElementById('editClientIndex').value=idx; 
+                    document.getElementById('clientSl').value=idx+1; 
+                    document.getElementById('clientName').value=c.name; 
+                    document.getElementById('address').value=c.address; 
+                    document.getElementById('contactPerson').value=c.person;
+                    document.getElementById('designation').value=c.designation || '';
+                    document.getElementById('mobile').value=c.mobile;
+                    document.getElementById('email').value=c.email || '';
+                } else { 
+                    document.getElementById('clientForm').reset(); 
+                    document.getElementById('clientSl').value=clients.length+1; 
+                    document.getElementById('editClientIndex').value=-1;
+                }
+            }
         }
-        document.getElementById('clientForm').onsubmit = (e) => { e.preventDefault(); const idx=parseInt(document.getElementById('editClientIndex').value); const data={ name: document.getElementById('clientName').value, address: document.getElementById('address').value||'N/A', person: document.getElementById('contactPerson').value||'N/A', mobile: document.getElementById('mobile').value||'N/A' }; if(idx>-1) clients[idx]=data; else clients.push(data); localStorage.setItem('arvin_clients_list', JSON.stringify(clients)); renderClients(); toggleClientModal(false); };
 
+        // Updated client form submit
+        document.getElementById('clientForm').onsubmit = (e) => { 
+            e.preventDefault(); 
+            const idx=parseInt(document.getElementById('editClientIndex').value); 
+            const data={ 
+                name: document.getElementById('clientName').value, 
+                address: document.getElementById('address').value||'N/A', 
+                person: document.getElementById('contactPerson').value||'N/A',
+                designation: document.getElementById('designation').value||'',
+                mobile: document.getElementById('mobile').value||'N/A',
+                email: document.getElementById('email').value||''
+            }; 
+            if(idx>-1) clients[idx]=data; else clients.push(data); 
+            localStorage.setItem('arvin_clients_list', JSON.stringify(clients)); 
+            renderClients(); toggleClientModal(false); 
+        };
+
+        // Updated product render with new fields
         function renderProducts() {
-            document.getElementById('productTableBody').innerHTML = products.map((p, i) => `<tr class="border-b"><td class="p-3 font-bold text-orange-600">${i+1}</td><td class="p-3">${p.item}</td><td class="p-3">${p.unit}</td><td class="p-3">${p.rate}</td><td class="p-3">${p.stock}</td><td class="p-3 text-center"><button onclick="toggleProductModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteItem('products', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            document.getElementById('productTableBody').innerHTML = products.map((p, i) => `<tr class="border-b"><td class="p-3 font-bold text-orange-600">${i+1}</td><td class="p-3">${p.item}</td><td class="p-3">${p.desc || ''}</td><td class="p-3">${p.unit}</td><td class="p-3">${p.rate}</td><td class="p-3">${p.stock}</td><td class="p-3 text-center"><button onclick="toggleProductModal(true, ${i})" class="text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteItem('products', ${i})" class="text-red-400"><i class="fas fa-trash"></i></button></td></tr>`).join('');
         }
+
+        // Updated product modal toggle
         function toggleProductModal(s, idx=-1) {
             const m = document.getElementById('productModal'); m.classList.toggle('hidden', !s);
-            if(s) { if(idx>-1) { const p=products[idx]; document.getElementById('productModalTitle').innerText="Edit Product"; document.getElementById('editProductIndex').value=idx; document.getElementById('productSl').value=idx+1; document.getElementById('itemName').value=p.item; document.getElementById('description').value=p.desc; document.getElementById('unit').value=p.unit; document.getElementById('rate').value=p.rate; document.getElementById('stockQty').value=p.stock; } else { document.getElementById('productForm').reset(); document.getElementById('productSl').value=products.length+1; document.getElementById('editProductIndex').value=-1; }}
+            if(s) { 
+                if(idx>-1) { 
+                    const p=products[idx]; 
+                    document.getElementById('productModalTitle').innerText="Edit Product"; 
+                    document.getElementById('editProductIndex').value=idx; 
+                    document.getElementById('productSl').value=idx+1; 
+                    document.getElementById('itemName').value=p.item; 
+                    document.getElementById('description').value=p.desc || ''; 
+                    document.getElementById('unit').value=p.unit; 
+                    document.getElementById('rate').value=p.rate; 
+                    document.getElementById('stockQty').value=p.stock; 
+                } else { 
+                    document.getElementById('productForm').reset(); 
+                    document.getElementById('productSl').value=products.length+1; 
+                    document.getElementById('editProductIndex').value=-1; 
+                }
+            }
         }
-        document.getElementById('productForm').onsubmit = (e) => { e.preventDefault(); const idx=parseInt(document.getElementById('editProductIndex').value); const data={ item: document.getElementById('itemName').value, desc: document.getElementById('description').value||'N/A', unit: document.getElementById('unit').value||'N/A', rate: document.getElementById('rate').value||0, stock: document.getElementById('stockQty').value||0 }; if(idx>-1) products[idx]=data; else products.push(data); localStorage.setItem('arvin_products_list', JSON.stringify(products)); renderProducts(); toggleProductModal(false); };
+
+        // Updated product form submit
+        document.getElementById('productForm').onsubmit = (e) => { 
+            e.preventDefault(); 
+            const idx=parseInt(document.getElementById('editProductIndex').value); 
+            const data={ 
+                item: document.getElementById('itemName').value, 
+                desc: document.getElementById('description').value||'N/A', 
+                unit: document.getElementById('unit').value||'N/A', 
+                rate: document.getElementById('rate').value||0, 
+                stock: document.getElementById('stockQty').value||0 
+            }; 
+            if(idx>-1) products[idx]=data; else products.push(data); 
+            localStorage.setItem('arvin_products_list', JSON.stringify(products)); 
+            renderProducts(); toggleProductModal(false); 
+        };
 
         function deleteItem(t, i) { if(confirm('Delete?')) { if(t==='clients') clients.splice(i,1); else products.splice(i,1); localStorage.setItem('arvin_'+t+'_list', JSON.stringify(t==='clients'?clients:products)); t==='clients'?renderClients():renderProducts(); }}
 
