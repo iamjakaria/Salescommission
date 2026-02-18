@@ -64,12 +64,20 @@
         .login-input { border:1px solid #d1d5db; border-radius:2rem; padding:1rem 1.5rem; width:100%; font-size:1rem; margin-bottom:1rem; background:#f9fafb; }
         .login-btn { background:#dc2626; color:white; border-radius:2rem; padding:1rem; font-weight:bold; width:100%; border:none; font-size:1.1rem; cursor:pointer; transition:0.2s; }
         .login-btn:hover { background:#b91c1c; }
-        .logout-btn { position:fixed; top:8px; right:8px; z-index:10001; background:#ef4444; color:white; border:none; border-radius:40px; padding:0.5rem 1rem; font-size:13px; font-weight:bold; display:flex; align-items:center; gap:6px; box-shadow:0 4px 8px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.3); backdrop-filter:blur(4px); }
+        /* logout button – centred above header */
+        .logout-btn {
+            position: relative;
+            width: fit-content;
+            margin: 6px auto 0 auto;
+            background:#ef4444; color:white; border:none; border-radius:40px; padding:0.5rem 1rem; font-size:13px; font-weight:bold;
+            display:flex; align-items:center; gap:6px; box-shadow:0 4px 8px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.3); backdrop-filter:blur(4px);
+            z-index: 10001;
+        }
         .logout-btn i { font-size:14px; }
         body.logged-in #loginOverlay { display: none; }
         body:not(.logged-in) .logout-btn { display: none; }
-        .logout-btn { display: none; }
-        body.logged-in .logout-btn { display: flex; }
+        /* nav sticks below logout button */
+        nav { position: sticky; top: 0; z-index: 50; }
 
         /* new horizontal scroll cards for mobile */
         .stats-scroll-x {
@@ -83,7 +91,7 @@
         }
         .stats-scroll-x > div {
             flex: 0 0 auto;
-            width: 45%;  /* approx two cards visible, then scroll */
+            width: 45%;
             min-width: 140px;
         }
         @media (min-width: 768px) {
@@ -95,13 +103,13 @@
         }
         /* tiny text on stats for mobile */
         .stat-label {
-            font-size: 0.6rem;   /* ~9.6px */
+            font-size: 0.6rem;
             line-height: 1rem;
             font-weight: 600;
             letter-spacing: 0.05em;
         }
         .stat-value {
-            font-size: 1rem;      /* 16px but bold enough */
+            font-size: 1rem;
             line-height: 1.5rem;
             font-weight: 800;
         }
@@ -115,6 +123,63 @@
         /* small delete icon for images */
         .img-delete-icon { cursor: pointer; color: #dc2626; font-size: 12px; margin-left: 6px; }
         .img-delete-icon:hover { color: #b91c1c; }
+        
+        /* New styles for larger menu tabs in 2 columns */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            padding: 4px 0;
+        }
+        
+        .menu-grid button {
+            padding: 16px 8px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .menu-grid button i {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        .menu-grid button span {
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .menu-grid button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: currentColor;
+        }
+        
+        /* Desktop adjustments */
+        @media (min-width: 768px) {
+            .menu-grid {
+                gap: 16px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            
+            .menu-grid button {
+                padding: 20px 12px;
+            }
+            
+            .menu-grid button i {
+                font-size: 24px;
+            }
+            
+            .menu-grid button span {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -132,7 +197,7 @@
         </div>
     </div>
 
-    <!-- LOGOUT BUTTON (appears only after login) -->
+    <!-- LOGOUT BUTTON (centered above header) -->
     <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
 
     <!-- Animated Move Top Button (visible on tabs) -->
@@ -147,56 +212,55 @@
                     <i class="fas fa-fire-extinguisher mr-2"></i> <span id="nav-company-name">ARVIN CONTROLS</span>
                 </div>
                 
-                <!-- nav-grid: 3 items per row on mobile, auto on desktop -->
-                <div id="nav-grid" class="grid grid-cols-3 gap-2 w-full">
-                    <button onclick="openTab('clients')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm border border-red-100">
+                <!-- Updated menu grid: larger tabs in 2 columns justified -->
+                <div id="nav-grid" class="menu-grid">
+                    <button onclick="openTab('clients')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border-red-200">
                         <i class="fas fa-users text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Clients</span>
+                        <span>Clients</span>
                     </button>
-                    <button onclick="openTab('products')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white transition shadow-sm border border-orange-100">
+                    <button onclick="openTab('products')" class="bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white border-orange-200">
                         <i class="fas fa-boxes text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Products</span>
+                        <span>Products</span>
                     </button>
-                    <button onclick="openTab('suppliers')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition shadow-sm border border-blue-100">
+                    <button onclick="openTab('suppliers')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border-blue-200">
                         <i class="fas fa-truck text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Supplier</span>
+                        <span>Supplier</span>
                     </button>
-                    <button onclick="openTab('inventory')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition shadow-sm border border-emerald-100">
+                    <button onclick="openTab('inventory')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border-emerald-200">
                         <i class="fas fa-warehouse text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Inventory</span>
+                        <span>Inventory</span>
                     </button>
-                    <button onclick="openTab('invoice')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-600 hover:text-white transition shadow-sm border border-yellow-100">
+                    <button onclick="openTab('invoice')" class="bg-yellow-50 text-yellow-600 hover:bg-yellow-600 hover:text-white border-yellow-200">
                         <i class="fas fa-file-invoice-dollar text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Invoice</span>
+                        <span>Invoice</span>
                     </button>
-                    <button onclick="openTab('accounts')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition shadow-sm border border-purple-100">
+                    <button onclick="openTab('accounts')" class="bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white border-purple-200">
                         <i class="fas fa-calculator text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Accounts</span>
+                        <span>Accounts</span>
                     </button>
-                    <!-- New tabs – mobile row 2 -->
-                    <button onclick="openTab('quotation')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition shadow-sm border border-indigo-100">
+                    <button onclick="openTab('quotation')" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white border-indigo-200">
                         <i class="fas fa-file-alt text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Quotation</span>
+                        <span>Quotation</span>
                     </button>
-                    <button onclick="openTab('delivery')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white transition shadow-sm border border-teal-100">
+                    <button onclick="openTab('delivery')" class="bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white border-teal-200">
                         <i class="fas fa-truck-loading text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Delivery</span>
+                        <span>Delivery</span>
                     </button>
-                    <button onclick="openTab('purchase')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition shadow-sm border border-amber-100">
+                    <button onclick="openTab('purchase')" class="bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white border-amber-200">
                         <i class="fas fa-clipboard-list text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Purchase</span>
+                        <span>Purchase</span>
                     </button>
-                    <button onclick="openTab('moneyreceipt')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-lime-50 text-lime-600 hover:bg-lime-600 hover:text-white transition shadow-sm border border-lime-100">
+                    <button onclick="openTab('moneyreceipt')" class="bg-lime-50 text-lime-600 hover:bg-lime-600 hover:text-white border-lime-200">
                         <i class="fas fa-receipt text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Money Rcpt</span>
+                        <span>Money Rcpt</span>
                     </button>
-                    <button onclick="openTab('letter')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition shadow-sm border border-rose-100">
+                    <button onclick="openTab('letter')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border-rose-200">
                         <i class="fas fa-envelope text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Letter</span>
+                        <span>Letter</span>
                     </button>
-                    <button onclick="openTab('settings')" class="flex flex-col items-center justify-center p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-600 hover:text-white transition shadow-sm border border-gray-200">
+                    <button onclick="openTab('settings')" class="bg-gray-100 text-gray-600 hover:bg-gray-600 hover:text-white border-gray-200">
                         <i class="fas fa-cog text-lg mb-1"></i>
-                        <span class="text-[9px] uppercase font-bold tracking-tight">Settings</span>
+                        <span>Settings</span>
                     </button>
                 </div>
             </div>
