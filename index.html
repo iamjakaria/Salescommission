@@ -252,7 +252,7 @@
             </div>
         </div>
 
-        <!-- INVOICE (unchanged) -->
+        <!-- INVOICE (FIXED ITEM ADDITION - exactly same PDF layout) -->
         <div id="invoice" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-yellow-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -459,13 +459,103 @@
         </div>
     </main>
 
-    <!-- All modals (unchanged) -->
-    <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">...</div>
-    <div id="productModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">...</div>
-    <div id="supplierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">...</div>
-    <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">...</div>
-    <div id="accModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">...</div>
-    <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">...</div>
+    <!-- Modals (identical to original, but with proper ID for product suggestions inside itemModal) -->
+    <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="bg-red-600 p-4 text-white flex justify-between items-center"><h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3><button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+            <form id="clientForm" class="p-6 space-y-4">
+                <input type="hidden" id="editClientIndex" value="-1">
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="clientSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Client Name</label><input type="text" id="clientName" required class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Address</label><input type="text" id="address" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Contact Person</label><input type="text" id="contactPerson" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Mobile</label><input type="text" id="mobile" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <button type="submit" class="w-full bg-red-600 text-white font-bold py-2 rounded-lg uppercase shadow-md">Save Client</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="productModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="bg-orange-600 p-4 text-white flex justify-between items-center"><h3 id="productModalTitle" class="font-bold uppercase">Add Product</h3><button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+            <form id="productForm" class="p-6 space-y-4">
+                <input type="hidden" id="editProductIndex" value="-1">
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">SL</label><input type="text" id="productSl" readonly class="w-full border-b-2 border-gray-200 bg-gray-50 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Item Name</label><input type="text" id="itemName" required class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="description" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="unit" placeholder="e.g. Pcs, Box" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Rate (৳)</label><input type="number" id="rate" step="0.01" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Stock Quantity</label><input type="number" id="stockQty" class="w-full border-b-2 border-gray-200 py-1"></div>
+                <button type="submit" class="w-full bg-orange-600 text-white font-bold py-2 rounded-lg uppercase shadow-md">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="supplierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md">
+            <div class="bg-blue-600 p-4 text-white flex justify-between"><h3 class="font-bold uppercase">Supplier</h3><button onclick="toggleSupplierModal(false)" class="text-white text-2xl">&times;</button></div>
+            <form id="supplierForm" class="p-6 space-y-4">
+                <input type="hidden" id="editSupplierIndex" value="-1">
+                <div><label class="text-[10px] font-bold">Name</label><input type="text" id="suppName" required class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Contact Person</label><input type="text" id="suppPerson" class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Mobile</label><input type="text" id="suppMobile" class="w-full border py-2 px-3"></div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ITEM MODAL – FIXED: added missing fields, product suggestions, and onsubmit handler -->
+    <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md">
+            <div class="bg-yellow-500 p-4 text-white flex justify-between items-center">
+                <h3 class="font-bold uppercase">Add Item to Invoice</h3>
+                <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+            </div>
+            <form id="itemForm" onsubmit="event.preventDefault(); addItemToInvoice();" class="p-6 space-y-4">
+                <div class="autocomplete-wrapper">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Product</label>
+                    <input type="text" id="invProductInput" oninput="showProductSuggestions()" placeholder="Type product name..." class="w-full border-b-2 border-gray-200 py-1" required>
+                    <div id="productSuggestions" class="suggestions-list"></div>
+                </div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="itemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="itemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="itemQty" oninput="calcItemTotal()" class="w-full border-b-2 py-1" value="1" min="1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Price (৳)</label><input type="number" id="itemPrice" step="0.01" oninput="calcItemTotal()" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total</label><input type="text" id="itemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-yellow-600"></div>
+                <button type="submit" class="w-full bg-yellow-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-yellow-600"><i class="fas fa-plus mr-1"></i> Add to Invoice</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Account Modal (unchanged) -->
+    <div id="accModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md">
+            <div id="accModalHeader" class="p-4 text-white flex justify-between items-center"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl">&times;</button></div>
+            <form id="accForm" class="p-6 space-y-4">
+                <input type="hidden" id="accType" value="income">
+                <input type="hidden" id="editAccIndex" value="-1">
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Date</label><input type="date" id="accDate" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Amount (৳)</label><input type="number" id="accAmount" step="0.01" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Purpose / Description</label><input type="text" id="accPurpose" class="w-full border-b-2 py-1" required></div>
+                <button id="accSubmitBtn" type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg uppercase shadow-lg">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md">
+            <div class="bg-orange-600 p-4 text-white flex justify-between"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white text-2xl">&times;</button></div>
+            <form id="orderForm" class="p-6 space-y-4">
+                <input type="hidden" id="editOrderIndex" value="-1">
+                <div><label class="text-[10px] font-bold">Client</label><input type="text" id="orderClient" required class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Date</label><input type="date" id="orderDate" class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Type (e.g., Supply, Service)</label><input type="text" id="orderType" class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Order Value (৳)</label><input type="number" id="orderValue" step="0.01" required class="w-full border py-2 px-3"></div>
+                <div><label class="text-[10px] font-bold">Cost (৳)</label><input type="number" id="orderCost" step="0.01" required class="w-full border py-2 px-3"></div>
+                <button type="submit" class="w-full bg-orange-600 text-white font-bold py-2 rounded-lg">Save Order</button>
+            </form>
+        </div>
+    </div>
 
     <script>
         // Data Store (exactly as original)
@@ -953,9 +1043,9 @@
             if(pIdx > -1) {
                 const p = products[pIdx];
                 document.getElementById('invProductInput').value = item;
-                document.getElementById('itemDesc').value = p.desc;
-                document.getElementById('itemUnit').value = p.unit;
-                document.getElementById('itemPrice').value = p.rate;
+                document.getElementById('itemDesc').value = p.desc || '';
+                document.getElementById('itemUnit').value = p.unit || 'Pcs';
+                document.getElementById('itemPrice').value = p.rate || 0;
                 calcItemTotal();
                 document.getElementById('productSuggestions').style.display = 'none';
             }
@@ -979,14 +1069,36 @@
             renderInvoiceItems();
         }
 
-        function toggleItemModal(s) { document.getElementById('itemModal').classList.toggle('hidden', !s); if(s) { document.getElementById('itemForm').reset(); document.getElementById('invProductInput').value = ""; } }
+        function toggleItemModal(s) { 
+            document.getElementById('itemModal').classList.toggle('hidden', !s); 
+            if(s) { 
+                document.getElementById('itemForm').reset(); 
+                document.getElementById('invProductInput').value = ""; 
+                document.getElementById('itemDesc').value = "";
+                document.getElementById('itemUnit').value = "";
+                document.getElementById('itemPrice').value = "";
+                document.getElementById('itemQty').value = "1";
+                document.getElementById('itemTotal').value = "0.00";
+            } 
+        }
         function calcItemTotal() { const q = document.getElementById('itemQty').value || 0; const p = document.getElementById('itemPrice').value || 0; document.getElementById('itemTotal').value = (q * p).toFixed(2); }
 
         function addItemToInvoice() {
             const name = document.getElementById('invProductInput').value;
             if(!name) return alert("Select a product");
-            currentInvoiceItems.push({ name: name, desc: document.getElementById('itemDesc').value, unit: document.getElementById('itemUnit').value || 'Pcs', qty: document.getElementById('itemQty').value, price: document.getElementById('itemPrice').value, total: document.getElementById('itemTotal').value });
-            renderInvoiceItems(); toggleItemModal(false);
+            const qty = parseFloat(document.getElementById('itemQty').value) || 0;
+            const price = parseFloat(document.getElementById('itemPrice').value) || 0;
+            if(qty <= 0 || price <= 0) return alert("Qty and Price must be positive");
+            currentInvoiceItems.push({ 
+                name: name, 
+                desc: document.getElementById('itemDesc').value || '', 
+                unit: document.getElementById('itemUnit').value || 'Pcs', 
+                qty: qty, 
+                price: price, 
+                total: (qty * price).toFixed(2) 
+            });
+            renderInvoiceItems(); 
+            toggleItemModal(false);
         }
 
         function renderInvoiceItems() {
@@ -1120,9 +1232,5 @@
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
     </script>
-
-    <!-- Modals actual content (minimized here but fully functional – they exist in original, keep as is) -->
-    <!-- Because of length, we keep the original modal code exactly; here I'll include placeholder to avoid repetition, but in final answer full modal code is preserved. For brevity in this response they are kept as original placeholders, but in final HTML they remain identical. -->
-    <!-- The full modal HTML is identical to original; I am not modifying them. -->
 </body>
 </html>
