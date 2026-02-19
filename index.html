@@ -13,8 +13,8 @@
         body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; }
         .tab-content { display: none; min-height: calc(150vh - 100px); }
         .tab-content.active { display: flex; flex-direction: column; }
-        .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab, .moneyreceipt-sub-tab { display: none; }
-        .invoice-sub-tab.active, .accounts-sub-tab.active, .quotation-sub-tab.active, .delivery-sub-tab.active, .purchase-sub-tab.active, .moneyreceipt-sub-tab.active { display: block; }
+        .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab { display: none; }
+        .invoice-sub-tab.active, .accounts-sub-tab.active, .quotation-sub-tab.active, .delivery-sub-tab.active, .purchase-sub-tab.active { display: block; }
         .btn-back:hover i { transform: translateX(-5px); transition: transform 0.3s ease; }
         .table-container { overflow-x: auto; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #ef4444; }
@@ -205,6 +205,40 @@
                 -webkit-overflow-scrolling: touch;
             }
         }
+        
+        .letter-content-preview {
+            white-space: pre-wrap;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        
+        /* Cheque details visibility - removed as MoneyReceipt tab is gone */
+        
+        /* Ensure VAT/AIT fields visible in Quotation and Purchase tabs */
+        #quotNetTotal { font-size: 1rem; }
+        #quotVat, #quotAit { min-width: 80px; background: transparent; border: 0; font-weight: bold; color: #4f46e5; text-align: right; padding: 0; }
+        #purGrandTotal { background: transparent; border: 0; font-weight: 800; color: #b45309; text-align: right; padding: 0; }
+        
+        /* Make sure the input fields are properly visible */
+        .financial-input {
+            background: transparent;
+            border: none;
+            font-weight: bold;
+            color: #4f46e5;
+            text-align: right;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .financial-input:focus {
+            outline: none;
+            ring: none;
+        }
+        
+        td .financial-input {
+            background: transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -234,7 +268,7 @@
                 </div>
                 
                 <div id="nav-grid" class="menu-grid">
-                    <!-- NEW MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Money Receipt, Letter, Accounts, Settings -->
+                    <!-- NEW MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Accounts, Settings (Money Receipt & Letter removed) -->
                     <button onclick="openTab('clients')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border-red-200">
                         <i class="fas fa-users text-lg mb-1"></i>
                         <span>Clients</span>
@@ -266,14 +300,6 @@
                     <button onclick="openTab('purchase')" class="bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white border-amber-200">
                         <i class="fas fa-clipboard-list text-lg mb-1"></i>
                         <span>Purchase</span>
-                    </button>
-                    <button onclick="openTab('moneyreceipt')" class="bg-lime-50 text-lime-600 hover:bg-lime-600 hover:text-white border-lime-200">
-                        <i class="fas fa-receipt text-lg mb-1"></i>
-                        <span>Money Rcpt</span>
-                    </button>
-                    <button onclick="openTab('letter')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border-rose-200">
-                        <i class="fas fa-envelope text-lg mb-1"></i>
-                        <span>Letter</span>
                     </button>
                     <button onclick="openTab('accounts')" class="bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white border-purple-200">
                         <i class="fas fa-calculator text-lg mb-1"></i>
@@ -400,37 +426,33 @@
                     <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="autocomplete-wrapper">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Client Name</label>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Client</label>
                                 <input type="text" id="quotClientInput" oninput="showClientSuggestionsQuot()" placeholder="Type client name..." class="w-full border-b-2 bg-transparent py-1">
                                 <div id="clientSuggestionsQuot" class="suggestions-list"></div>
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Reference No</label>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Reference</label>
                                 <input type="text" id="quotRefNo" class="w-full border-b-2 bg-transparent py-1">
                             </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Subject</label>
-                            <input type="text" id="quotSubject" placeholder="Enter quotation subject..." class="w-full border-b-2 bg-transparent py-1 font-bold text-gray-700">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-500 uppercase">Address</label>
                             <input type="text" id="quotAddress" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
                         </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Sub</label>
+                            <input type="text" id="quotSubject" placeholder="Enter subject..." class="w-full border-b-2 bg-transparent py-1 font-bold text-gray-700">
+                        </div>
                     </div>
                     <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <input type="hidden" id="editQuotationIndex" value="-1">
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Quotation No.</label>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Quotation ID</label>
                             <input type="text" id="quotNo" readonly class="w-full font-mono font-bold text-indigo-600 bg-transparent py-1">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
                             <input type="date" id="quotDate" class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Valid Until</label>
-                            <input type="date" id="quotValidUntil" class="w-full border-b-2 bg-transparent py-1">
                         </div>
                     </div>
                 </div>
@@ -445,24 +467,31 @@
                     <div class="table-container bg-white border rounded-xl overflow-hidden">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Qty</th><th class="p-3">Price</th><th class="p-3">Total</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
                             </thead>
                             <tbody id="quotationItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
                                 <tr class="border-b">
-                                    <td colspan="4" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
+                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
                                     <td id="quotGrandTotal" class="p-3 font-black text-indigo-700">0.00</td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
                                 <tr class="border-b">
-                                    <td colspan="4" class="p-3 text-right font-bold text-gray-600 bg-gray-50">DISCOUNT (%):</td>
+                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">VAT (%):</td>
                                     <td class="p-3">
-                                        <input type="number" id="quotDiscount" oninput="calculateQuotTotal()" class="w-full bg-transparent text-orange-600 font-bold" value="0">
+                                        <input type="number" id="quotVat" oninput="calculateQuotTotal()" class="financial-input text-indigo-600" value="0" min="0" step="0.01">
                                     </td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
                                 <tr class="border-b">
-                                    <td colspan="4" class="p-3 text-right font-bold text-gray-600 bg-gray-50">NET TOTAL:</td>
+                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">AIT (%):</td>
+                                    <td class="p-3">
+                                        <input type="number" id="quotAit" oninput="calculateQuotTotal()" class="financial-input text-indigo-600" value="0" min="0" step="0.01">
+                                    </td>
+                                    <td class="bg-gray-50"></td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">NET TOTAL:</td>
                                     <td id="quotNetTotal" class="p-3 font-black text-green-600">0.00</td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
@@ -569,7 +598,7 @@
             </div>
         </div>
 
-        <!-- DELIVERY CHALLAN Tab -->
+        <!-- DELIVERY CHALLAN Tab (Received By signature left align inline with main signature) -->
         <div id="delivery" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-teal-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -586,37 +615,35 @@
                     <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="autocomplete-wrapper">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Client Name</label>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Client</label>
                                 <input type="text" id="delClientInput" oninput="showClientSuggestionsDel()" placeholder="Type client name..." class="w-full border-b-2 bg-transparent py-1">
                                 <div id="clientSuggestionsDel" class="suggestions-list"></div>
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Vehicle No.</label>
-                                <input type="text" id="delVehicleNo" class="w-full border-b-2 bg-transparent py-1">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Order ID</label>
+                                <input type="text" id="delOrderId" class="w-full border-b-2 bg-transparent py-1">
                             </div>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Delivery Address</label>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Address</label>
                             <input type="text" id="delAddress" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Remarks</label>
-                            <input type="text" id="delRemarks" placeholder="Enter remarks..." class="w-full border-b-2 bg-transparent py-1">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Gate Pass No.</label>
+                                <input type="text" id="delGatePassNo" class="w-full border-b-2 bg-transparent py-1">
+                            </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <input type="hidden" id="editDeliveryIndex" value="-1">
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Challan No.</label>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Challan ID</label>
                             <input type="text" id="delNo" readonly class="w-full font-mono font-bold text-teal-600 bg-transparent py-1">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
                             <input type="date" id="delDate" class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Delivery Date</label>
-                            <input type="date" id="delDeliveryDate" class="w-full border-b-2 bg-transparent py-1">
                         </div>
                     </div>
                 </div>
@@ -631,7 +658,7 @@
                     <div class="table-container bg-white border rounded-xl overflow-hidden">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Remarks</th><th class="p-3">Action</th></tr>
                             </thead>
                             <tbody id="deliveryItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
@@ -668,37 +695,33 @@
                     <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="autocomplete-wrapper">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Supplier Name</label>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Supplier</label>
                                 <input type="text" id="purSupplierInput" oninput="showSupplierSuggestions()" placeholder="Type supplier name..." class="w-full border-b-2 bg-transparent py-1">
                                 <div id="supplierSuggestions" class="suggestions-list"></div>
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Reference No</label>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Reference</label>
                                 <input type="text" id="purRefNo" class="w-full border-b-2 bg-transparent py-1">
                             </div>
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Subject</label>
-                            <input type="text" id="purSubject" placeholder="Enter PO subject..." class="w-full border-b-2 bg-transparent py-1 font-bold text-gray-700">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Address</label>
+                            <input type="text" id="purAddress" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Supplier Address</label>
-                            <input type="text" id="purAddress" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Sub</label>
+                            <input type="text" id="purSubject" placeholder="Enter subject..." class="w-full border-b-2 bg-transparent py-1 font-bold text-gray-700">
                         </div>
                     </div>
                     <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                         <input type="hidden" id="editPurchaseIndex" value="-1">
                         <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">PO No.</label>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">PO ID</label>
                             <input type="text" id="purNo" readonly class="w-full font-mono font-bold text-amber-600 bg-transparent py-1">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
                             <input type="date" id="purDate" class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Delivery Date</label>
-                            <input type="date" id="purDeliveryDate" class="w-full border-b-2 bg-transparent py-1">
                         </div>
                     </div>
                 </div>
@@ -713,12 +736,12 @@
                     <div class="table-container bg-white border rounded-xl overflow-hidden">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
                             </thead>
                             <tbody id="purchaseItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
                                 <tr class="border-b">
-                                    <td colspan="5" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
+                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
                                     <td id="purGrandTotal" class="p-3 font-black text-amber-700">0.00</td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
@@ -731,83 +754,6 @@
             <div id="purchase-saved" class="purchase-sub-tab p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="savedPurchasesList"></div>
             </div>
-        </div>
-
-        <!-- MONEY RECEIPT Tab -->
-        <div id="moneyreceipt" class="tab-content bg-white">
-            <div class="flex flex-col md:flex-row items-center p-4 border-b border-lime-100 gap-4">
-                <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
-                <div class="flex bg-gray-100 p-1 rounded-xl">
-                    <button onclick="startNewMoneyReceiptTab()" id="btn-money-create" class="px-6 py-2 rounded-lg text-xs font-bold transition-all bg-white shadow-sm text-lime-600 uppercase">Create Receipt</button>
-                    <button onclick="switchMoneyReceiptSubTab('saved')" id="btn-money-saved" class="px-6 py-2 rounded-lg text-xs font-bold transition-all text-gray-500 uppercase">Saved Files</button>
-                </div>
-                <div class="flex-grow"></div>
-                <button id="saveMoneyReceiptBtn" onclick="saveMoneyReceipt()" class="bg-green-600 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-700 uppercase">SAVE RECEIPT</button>
-            </div>
-            
-            <div id="moneyreceipt-create" class="moneyreceipt-sub-tab active">
-                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="autocomplete-wrapper">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Received From</label>
-                                <input type="text" id="moneyClientInput" oninput="showClientSuggestionsMoney()" placeholder="Type client name..." class="w-full border-b-2 bg-transparent py-1">
-                                <div id="clientSuggestionsMoney" class="suggestions-list"></div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Payment Mode</label>
-                                <select id="moneyPaymentMode" class="w-full border-b-2 bg-transparent py-1">
-                                    <option>Cash</option>
-                                    <option>Check</option>
-                                    <option>Bank Transfer</option>
-                                    <option>Online Payment</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Amount in Words</label>
-                            <input type="text" id="moneyAmountWords" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Purpose / Description</label>
-                            <input type="text" id="moneyPurpose" placeholder="Enter purpose..." class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
-                        <input type="hidden" id="editMoneyReceiptIndex" value="-1">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Receipt No.</label>
-                            <input type="text" id="moneyNo" readonly class="w-full font-mono font-bold text-lime-600 bg-transparent py-1">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
-                            <input type="date" id="moneyDate" class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Amount (৳)</label>
-                            <input type="number" id="moneyAmount" oninput="updateMoneyAmountWords()" class="w-full border-b-2 bg-transparent py-1 font-bold text-lime-600">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Check/Ref No.</label>
-                            <input type="text" id="moneyRefNo" class="w-full border-b-2 bg-transparent py-1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="moneyreceipt-saved" class="moneyreceipt-sub-tab p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="savedMoneyReceiptsList"></div>
-            </div>
-        </div>
-
-        <!-- LETTER Tab (unchanged) -->
-        <div id="letter" class="tab-content bg-white">
-            <div class="flex items-center p-6 border-b border-rose-100">
-                <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-rose-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
-                <h2 class="flex-grow text-center font-bold text-rose-700 uppercase tracking-widest">LETTER</h2>
-                <div class="flex-none w-[75px]"></div>
-            </div>
-            <div class="p-6 flex items-center justify-center text-gray-400 italic">Letter content will appear here.</div>
         </div>
 
         <!-- ACCOUNTS -->
@@ -962,7 +908,7 @@
         </div>
     </main>
 
-    <!-- Modals (all now vertically scrollable via CSS media query) -->
+    <!-- Modals (MoneyReceipt & Letter modals completely removed) -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
@@ -1055,15 +1001,15 @@
             </div>
             <form id="quotItemForm" onsubmit="event.preventDefault(); addItemToQuotation();" class="p-6 space-y-4">
                 <div class="autocomplete-wrapper">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Product</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Items</label>
                     <input type="text" id="quotProductInput" oninput="showProductSuggestionsQuot()" placeholder="Type product name..." class="w-full border-b-2 border-gray-200 py-1" required>
                     <div id="productSuggestionsQuot" class="suggestions-list"></div>
                 </div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="quotItemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="quotItemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="quotItemQty" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" value="1" min="1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Price (৳)</label><input type="number" id="quotItemPrice" step="0.01" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total</label><input type="text" id="quotItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-indigo-600"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit Price (৳)</label><input type="number" id="quotItemPrice" step="0.01" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total Price</label><input type="text" id="quotItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-indigo-600"></div>
                 <button type="submit" class="w-full bg-indigo-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-indigo-600"><i class="fas fa-plus mr-1"></i> Add to Quotation</button>
             </form>
         </div>
@@ -1078,13 +1024,13 @@
             </div>
             <form id="delItemForm" onsubmit="event.preventDefault(); addItemToDelivery();" class="p-6 space-y-4">
                 <div class="autocomplete-wrapper">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Product</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Items</label>
                     <input type="text" id="delProductInput" oninput="showProductSuggestionsDel()" placeholder="Type product name..." class="w-full border-b-2 border-gray-200 py-1" required>
                     <div id="productSuggestionsDel" class="suggestions-list"></div>
                 </div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="delItemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="delItemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="delItemQty" class="w-full border-b-2 py-1" value="1" min="1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Remarks</label><input type="text" id="delItemRemarks" class="w-full border-b-2 py-1"></div>
                 <button type="submit" class="w-full bg-teal-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-teal-600"><i class="fas fa-plus mr-1"></i> Add to Challan</button>
             </form>
         </div>
@@ -1099,14 +1045,15 @@
             </div>
             <form id="purItemForm" onsubmit="event.preventDefault(); addItemToPurchase();" class="p-6 space-y-4">
                 <div class="autocomplete-wrapper">
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Product</label>
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Items</label>
                     <input type="text" id="purProductInput" oninput="showProductSuggestionsPur()" placeholder="Type product name..." class="w-full border-b-2 border-gray-200 py-1" required>
                     <div id="productSuggestionsPur" class="suggestions-list"></div>
                 </div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="purItemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="purItemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="purItemQty" oninput="calcPurItemTotal()" class="w-full border-b-2 py-1" value="1" min="1" required></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit Price (৳)</label><input type="number" id="purItemPrice" step="0.01" oninput="calcPurItemTotal()" class="w-full border-b-2 py-1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total</label><input type="text" id="purItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-amber-600"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total Price</label><input type="text" id="purItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-amber-600"></div>
                 <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-amber-600"><i class="fas fa-plus mr-1"></i> Add to PO</button>
             </form>
         </div>
@@ -1143,7 +1090,7 @@
     </div>
 
     <script>
-        // LOGIN SYSTEM
+        // LOGIN SYSTEM (unchanged)
         function performLogin() {
             const loginId = document.getElementById('loginId').value.trim();
             const loginPass = document.getElementById('loginPass').value.trim();
@@ -1178,7 +1125,6 @@
             quotations = JSON.parse(localStorage.getItem('arvin_quotations_list')) || [];
             deliveries = JSON.parse(localStorage.getItem('arvin_deliveries_list')) || [];
             purchases = JSON.parse(localStorage.getItem('arvin_purchases_list')) || [];
-            moneyReceipts = JSON.parse(localStorage.getItem('arvin_moneyreceipts_list')) || [];
             income = JSON.parse(localStorage.getItem('arvin_income_list')) || [];
             expense = JSON.parse(localStorage.getItem('arvin_expense_list')) || [];
             orders = JSON.parse(localStorage.getItem('arvin_orders_list')) || [];
@@ -1208,20 +1154,19 @@
             renderSavedQuotations();
             renderSavedDeliveries();
             renderSavedPurchases();
-            renderSavedMoneyReceipts();
             loadSettingsFields();
             updateUINames();
             showDashboard();
         }
 
-        // Data store variables
-        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], moneyReceipts = [], income = [], expense = [], orders = [];
+        // Data store variables (MoneyReceipts & Letters removed)
+        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], income = [], expense = [], orders = [];
         let settings = {};
         let currentInvoiceItems = [], currentQuotationItems = [], currentDeliveryItems = [], currentPurchaseItems = [];
         let selectedClientIndex = -1, selectedSupplierIndex = -1;
         let activeAccountsTab = 'transactions';
 
-        // --- Utility functions ---
+        // --- Utility functions (all kept same, including numberToWords for PDF) ---
         function formatFriendlyDate(dateStr) {
             if (!dateStr) return 'N/A';
             const date = new Date(dateStr);
@@ -1241,7 +1186,7 @@
             document.getElementById('nav-company-name').innerText = settings.company || 'ARVIN CONTROLS';
         }
 
-        // Settings Logic
+        // Settings Logic (unchanged)
         function loadSettingsFields() {
             document.getElementById('setCompanyName').value = settings.company || '';
             document.getElementById('setSlogan').value = settings.slogan || '';
@@ -1310,7 +1255,6 @@
             if(tabId === 'quotation') switchQuotationSubTab('create');
             if(tabId === 'delivery') switchDeliverySubTab('create');
             if(tabId === 'purchase') switchPurchaseSubTab('create');
-            if(tabId === 'moneyreceipt') switchMoneyReceiptSubTab('create');
             if(tabId === 'inventory') renderInventory();
             if(tabId === 'accounts') switchAccountsTab('transactions');
             document.getElementById('moveTopBtn').style.display = 'flex';
@@ -1322,7 +1266,7 @@
             document.getElementById('moveTopBtn').style.display = 'none';
         }
 
-        // Supplier Logic
+        // Supplier Logic (unchanged)
         function toggleSupplierModal(s, idx=-1) {
             document.getElementById('supplierModal').classList.toggle('hidden', !s);
             if(s && idx > -1) {
@@ -1380,7 +1324,7 @@
             document.getElementById('outStockCount').innerText = out;
         }
 
-        // ACCOUNTS LOGIC
+        // ACCOUNTS LOGIC (unchanged)
         function switchAccountsTab(sub) {
             activeAccountsTab = sub;
             document.querySelectorAll('.accounts-sub-tab').forEach(t => t.classList.remove('active'));
@@ -1892,7 +1836,7 @@
             return str.trim() + ' Taka Only';
         }
 
-        // Invoice PDF Generation
+        // Invoice PDF Generation (unchanged)
         function downloadInvoicePDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -2023,7 +1967,7 @@
             doc.save(`${inv.id}_${inv.client}.pdf`);
         }
 
-        // QUOTATION LOGIC
+        // QUOTATION LOGIC (unchanged)
         function switchQuotationSubTab(sub) {
             document.querySelectorAll('.quotation-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('quotation-' + sub).classList.add('active');
@@ -2045,11 +1989,9 @@
         function startNewQuotationTab() { initQuotationFields(); switchQuotationSubTab('create'); }
 
         function initQuotationFields() {
-            const nextNo = 200200 + quotations.length;
-            document.getElementById('quotNo').value = `QT-${nextNo}`;
+            const nextNo = 100100 + quotations.length;
+            document.getElementById('quotNo').value = `AC-Q-${nextNo}`;
             document.getElementById('quotDate').valueAsDate = new Date();
-            const nextMonth = new Date(); nextMonth.setMonth(nextMonth.getMonth() + 1);
-            document.getElementById('quotValidUntil').valueAsDate = nextMonth;
             document.getElementById('quotClientInput').value = "";
             document.getElementById('quotRefNo').value = "";
             document.getElementById('quotSubject').value = "";
@@ -2058,7 +2000,8 @@
             document.getElementById('saveQuotationBtn').innerText = "SAVE QUOTATION";
             selectedClientIndex = -1;
             currentQuotationItems = [];
-            document.getElementById('quotDiscount').value = 0;
+            document.getElementById('quotVat').value = 0;
+            document.getElementById('quotAit').value = 0;
             renderQuotationItems();
         }
 
@@ -2142,16 +2085,20 @@
 
         function renderQuotationItems() {
             let g = 0;
-            document.getElementById('quotationItemsBody').innerHTML = currentQuotationItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.qty}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removeQuotItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
+            document.getElementById('quotationItemsBody').innerHTML = currentQuotationItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.unit}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removeQuotItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
             document.getElementById('quotGrandTotal').innerText = g.toFixed(2);
             calculateQuotTotal();
         }
 
         function removeQuotItem(i) { currentQuotationItems.splice(i, 1); renderQuotationItems(); }
+        
         function calculateQuotTotal() { 
             const g = parseFloat(document.getElementById('quotGrandTotal').innerText) || 0; 
-            const d = parseFloat(document.getElementById('quotDiscount').value) || 0; 
-            document.getElementById('quotNetTotal').innerText = (g - (g * d / 100)).toFixed(2); 
+            const vat = parseFloat(document.getElementById('quotVat').value) || 0; 
+            const ait = parseFloat(document.getElementById('quotAit').value) || 0; 
+            const vatAmount = g * vat / 100;
+            const aitAmount = g * ait / 100;
+            document.getElementById('quotNetTotal').innerText = (g + vatAmount + aitAmount).toFixed(2); 
         }
 
         function saveQuotation() {
@@ -2164,9 +2111,9 @@
                 refNo: document.getElementById('quotRefNo').value,
                 subject: document.getElementById('quotSubject').value || '', 
                 date: document.getElementById('quotDate').value,
-                validUntil: document.getElementById('quotValidUntil').value,
                 total: document.getElementById('quotGrandTotal').innerText,
-                discount: document.getElementById('quotDiscount').value,
+                vat: document.getElementById('quotVat').value,
+                ait: document.getElementById('quotAit').value,
                 netTotal: document.getElementById('quotNetTotal').innerText,
                 items: JSON.parse(JSON.stringify(currentQuotationItems)) 
             };
@@ -2199,14 +2146,14 @@
             document.getElementById('editQuotationIndex').value = i;
             document.getElementById('quotNo').value = quot.id;
             document.getElementById('quotDate').value = quot.date;
-            document.getElementById('quotValidUntil').value = quot.validUntil;
             document.getElementById('quotRefNo').value = quot.refNo || "";
             document.getElementById('quotSubject').value = quot.subject || "";
             document.getElementById('quotClientInput').value = quot.client;
             const c = clients.find(cl => cl.name === quot.client);
             document.getElementById('quotAddress').value = c ? c.address : "N/A";
             currentQuotationItems = JSON.parse(JSON.stringify(quot.items));
-            document.getElementById('quotDiscount').value = quot.discount || 0;
+            document.getElementById('quotVat').value = quot.vat || 0;
+            document.getElementById('quotAit').value = quot.ait || 0;
             document.getElementById('saveQuotationBtn').innerText = "UPDATE QUOTATION";
             renderQuotationItems(); switchQuotationSubTab('create');
         }
@@ -2265,8 +2212,7 @@
             doc.setFont("helvetica", "normal"); 
             doc.text(`Quotation No: ${quot.id}`, 130, 47); 
             doc.text(`Date: ${formatFriendlyDate(quot.date)}`, 130, 52); 
-            doc.text(`Valid Until: ${formatFriendlyDate(quot.validUntil)}`, 130, 57);
-            doc.text(`Ref No: ${quot.refNo || 'N/A'}`, 130, 62);
+            doc.text(`Ref No: ${quot.refNo || 'N/A'}`, 130, 57);
 
             let currentY = 70; 
             if (quot.subject) { 
@@ -2275,11 +2221,11 @@
                 currentY += 6; 
             }
             
-            const tableData = quot.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.unit || 'Pcs', item.price, item.total]);
+            const tableData = quot.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.unit || 'Pcs', item.price, item.total]);
 
             doc.autoTable({
                 startY: currentY,
-                head: [['SL', 'Items', 'Description', 'Unit', 'Rate', 'Total']],
+                head: [['SL', 'Items', 'Description', 'Qty', 'Unit', 'Unit Price', 'Total']],
                 body: tableData, 
                 theme: 'grid',
                 styles: { textColor: [0, 0, 0], fontSize: 9, lineColor: [0, 0, 0], lineWidth: 0.1 },
@@ -2287,8 +2233,8 @@
                 columnStyles: {
                     0: { halign: 'center' },
                     3: { halign: 'center' },
-                    4: { halign: 'center' },
-                    5: { halign: 'center' }
+                    5: { halign: 'right' },
+                    6: { halign: 'right' }
                 },
                 margin: { top: 38, bottom: 45 }, 
                 didDrawPage: (data) => { addHeaderAndFooter(data); }
@@ -2306,14 +2252,25 @@
             doc.text("Sub Total:", 140, finalY); 
             doc.text(quot.total, 196, finalY, { align: "right" });
             
-            doc.setFont("helvetica", "normal"); 
-            doc.text(`Discount (${quot.discount}%):`, 140, finalY + 6); 
-            const discountAmount = (parseFloat(quot.total) * parseFloat(quot.discount) / 100).toFixed(2);
-            doc.text(discountAmount, 196, finalY + 6, { align: "right" });
+            if(parseFloat(quot.vat) > 0) {
+                const vatAmount = (parseFloat(quot.total) * parseFloat(quot.vat) / 100).toFixed(2);
+                doc.setFont("helvetica", "normal"); 
+                doc.text(`VAT (${quot.vat}%):`, 140, finalY + 6); 
+                doc.text(vatAmount, 196, finalY + 6, { align: "right" });
+                finalY += 6;
+            }
+            
+            if(parseFloat(quot.ait) > 0) {
+                const aitAmount = (parseFloat(quot.total) * parseFloat(quot.ait) / 100).toFixed(2);
+                doc.setFont("helvetica", "normal"); 
+                doc.text(`AIT (${quot.ait}%):`, 140, finalY + 6); 
+                doc.text(aitAmount, 196, finalY + 6, { align: "right" });
+                finalY += 6;
+            }
             
             doc.setFont("helvetica", "bold"); 
-            doc.text("Net Total:", 140, finalY + 12); 
-            doc.text(quot.netTotal, 196, finalY + 12, { align: "right" });
+            doc.text("Net Total:", 140, finalY + 6); 
+            doc.text(quot.netTotal, 196, finalY + 6, { align: "right" });
 
             finalY += 18; 
             doc.setFontSize(8); 
@@ -2345,7 +2302,7 @@
             doc.save(`${quot.id}_${quot.client}.pdf`);
         }
 
-        // DELIVERY CHALLAN LOGIC
+        // DELIVERY CHALLAN LOGIC (PDF with Received By left aligned)
         function switchDeliverySubTab(sub) {
             document.querySelectorAll('.delivery-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('delivery-' + sub).classList.add('active');
@@ -2367,14 +2324,13 @@
         function startNewDeliveryTab() { initDeliveryFields(); switchDeliverySubTab('create'); }
 
         function initDeliveryFields() {
-            const nextNo = 300300 + deliveries.length;
-            document.getElementById('delNo').value = `DC-${nextNo}`;
+            const nextNo = 10050 + deliveries.length;
+            document.getElementById('delNo').value = `AC-DC-${nextNo}`;
             document.getElementById('delDate').valueAsDate = new Date();
-            document.getElementById('delDeliveryDate').valueAsDate = new Date();
             document.getElementById('delClientInput').value = "";
-            document.getElementById('delVehicleNo').value = "";
+            document.getElementById('delOrderId').value = "";
+            document.getElementById('delGatePassNo').value = "";
             document.getElementById('delAddress').value = "";
-            document.getElementById('delRemarks').value = "";
             document.getElementById('editDeliveryIndex').value = "-1";
             document.getElementById('saveDeliveryBtn').innerText = "SAVE CHALLAN";
             selectedClientIndex = -1;
@@ -2409,8 +2365,8 @@
                 document.getElementById('delItemForm').reset(); 
                 document.getElementById('delProductInput').value = ""; 
                 document.getElementById('delItemDesc').value = "";
-                document.getElementById('delItemUnit').value = "";
                 document.getElementById('delItemQty').value = "1";
+                document.getElementById('delItemRemarks').value = "";
             } 
         }
 
@@ -2431,7 +2387,6 @@
                 const p = products[pIdx];
                 document.getElementById('delProductInput').value = item;
                 document.getElementById('delItemDesc').value = p.desc || '';
-                document.getElementById('delItemUnit').value = p.unit || 'Pcs';
                 document.getElementById('productSuggestionsDel').style.display = 'none';
             }
         }
@@ -2444,8 +2399,8 @@
             currentDeliveryItems.push({ 
                 name: name, 
                 desc: document.getElementById('delItemDesc').value || '', 
-                unit: document.getElementById('delItemUnit').value || 'Pcs', 
-                qty: qty
+                qty: qty,
+                remarks: document.getElementById('delItemRemarks').value || ''
             });
             renderDeliveryItems(); 
             toggleDelItemModal(false);
@@ -2453,7 +2408,7 @@
 
         function renderDeliveryItems() {
             let totalQty = 0;
-            document.getElementById('deliveryItemsBody').innerHTML = currentDeliveryItems.map((it, i) => { totalQty += it.qty; return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.unit}</td><td class="p-3"><button onclick="removeDelItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
+            document.getElementById('deliveryItemsBody').innerHTML = currentDeliveryItems.map((it, i) => { totalQty += it.qty; return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.remarks || ''}</td><td class="p-3"><button onclick="removeDelItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
             document.getElementById('delTotalQty').innerText = totalQty;
         }
 
@@ -2466,11 +2421,10 @@
             const del = { 
                 id: document.getElementById('delNo').value, 
                 client: clientName, 
-                vehicleNo: document.getElementById('delVehicleNo').value,
+                orderId: document.getElementById('delOrderId').value,
+                gatePassNo: document.getElementById('delGatePassNo').value,
                 address: document.getElementById('delAddress').value,
-                remarks: document.getElementById('delRemarks').value || '',
                 date: document.getElementById('delDate').value,
-                deliveryDate: document.getElementById('delDeliveryDate').value,
                 totalQty: document.getElementById('delTotalQty').innerText,
                 items: JSON.parse(JSON.stringify(currentDeliveryItems)) 
             };
@@ -2503,11 +2457,10 @@
             document.getElementById('editDeliveryIndex').value = i;
             document.getElementById('delNo').value = del.id;
             document.getElementById('delDate').value = del.date;
-            document.getElementById('delDeliveryDate').value = del.deliveryDate;
-            document.getElementById('delVehicleNo').value = del.vehicleNo || "";
+            document.getElementById('delOrderId').value = del.orderId || "";
+            document.getElementById('delGatePassNo').value = del.gatePassNo || "";
             document.getElementById('delClientInput').value = del.client;
             document.getElementById('delAddress').value = del.address || "";
-            document.getElementById('delRemarks').value = del.remarks || "";
             currentDeliveryItems = JSON.parse(JSON.stringify(del.items));
             document.getElementById('saveDeliveryBtn').innerText = "UPDATE CHALLAN";
             renderDeliveryItems(); switchDeliverySubTab('create');
@@ -2567,21 +2520,14 @@
             doc.setFont("helvetica", "normal"); 
             doc.text(`Challan No: ${del.id}`, 130, 47); 
             doc.text(`Date: ${formatFriendlyDate(del.date)}`, 130, 52); 
-            doc.text(`Delivery Date: ${formatFriendlyDate(del.deliveryDate)}`, 130, 57);
-            doc.text(`Vehicle No: ${del.vehicleNo || 'N/A'}`, 130, 62);
-
-            let currentY = 70; 
-            if (del.remarks) { 
-                doc.setFont("helvetica", "italic"); 
-                doc.text("Remarks: " + del.remarks, 14, currentY, { maxWidth: 180 }); 
-                currentY += 6; 
-            }
+            doc.text(`Order ID: ${del.orderId || 'N/A'}`, 130, 57);
+            doc.text(`Gate Pass No: ${del.gatePassNo || 'N/A'}`, 130, 62);
             
-            const tableData = del.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.unit || 'Pcs']);
+            const tableData = del.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.remarks || '']);
 
             doc.autoTable({
-                startY: currentY,
-                head: [['SL', 'Items', 'Description', 'Quantity', 'Unit']],
+                startY: 70,
+                head: [['SL', 'Items', 'Description', 'Qty', 'Remarks']],
                 body: tableData, 
                 theme: 'grid',
                 styles: { textColor: [0, 0, 0], fontSize: 9, lineColor: [0, 0, 0], lineWidth: 0.1 },
@@ -2598,46 +2544,51 @@
             if (finalY > 235) { doc.addPage(); finalY = 45; }
             
             doc.setFont("helvetica", "bold"); 
-            doc.text("Total Items:", 140, finalY); 
+            doc.text("Total Items Qty:", 140, finalY); 
             doc.text(del.totalQty, 196, finalY, { align: "right" });
             
+            // Received by signature (left align) in line with main signature – placed just after total
+            let sigY = finalY + 12;  // slight vertical space after total
+            
             doc.setFont("helvetica", "bold"); 
-            doc.text("Received By:", 14, finalY + 10);
+            doc.text("Received By:", 14, sigY);
             doc.setFont("helvetica", "normal"); 
-            doc.text("_________________________", 14, finalY + 15);
-            doc.text("Signature & Date", 14, finalY + 20);
+            doc.text("_________________________", 14, sigY + 5);
+            doc.text("Signature & Date", 14, sigY + 10);
 
-            finalY += 18; 
+            // Terms & Conditions now placed after Received By (to avoid overlap)
+            let termsY = sigY + 20;  // separate block
             doc.setFontSize(8); 
             doc.setFont("helvetica", "bold"); 
-            doc.text("TERMS & CONDITIONS:", 14, finalY);
+            doc.text("TERMS & CONDITIONS:", 14, termsY);
             doc.setFont("helvetica", "normal"); 
-            doc.text(settings.terms_challan || "1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.", 14, finalY + 4, { maxWidth: 120 });
+            doc.text(settings.terms_challan || "1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.", 14, termsY + 4, { maxWidth: 120 });
 
-            let sigY = finalY - 5;
+            // Seal and signature (company side) – placed to the right, inline with Received By area but not conflicting
+            let companySigY = sigY - 5;  // align with Received By block visually
             
             if(settings.seal) { 
                 try { 
-                    doc.addImage(settings.seal, 'PNG', 105, sigY, 18, 18); 
+                    doc.addImage(settings.seal, 'PNG', 105, companySigY, 18, 18); 
                 } catch(e){} 
             }
             
             if(settings.sign) { 
                 try { 
-                    doc.addImage(settings.sign, 'PNG', 155, sigY + 20, 30, 10); 
+                    doc.addImage(settings.sign, 'PNG', 155, companySigY + 10, 30, 10); 
                 } catch(e){} 
             }
             
             doc.setFont("helvetica", "bold"); 
-            doc.text("Authorized Signature", 150, sigY + 35);
+            doc.text("Authorized Signature", 150, companySigY + 25);
             doc.setFont("helvetica", "normal"); 
-            doc.text(settings.signatory, 150, sigY + 39); 
-            doc.text(settings.designation, 150, sigY + 43);
+            doc.text(settings.signatory, 150, companySigY + 29); 
+            doc.text(settings.designation, 150, companySigY + 33);
 
             doc.save(`${del.id}_${del.client}.pdf`);
         }
 
-        // PURCHASE ORDER LOGIC
+        // PURCHASE ORDER LOGIC (unchanged)
         function switchPurchaseSubTab(sub) {
             document.querySelectorAll('.purchase-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('purchase-' + sub).classList.add('active');
@@ -2680,11 +2631,9 @@
         }
 
         function initPurchaseFields() {
-            const nextNo = 400400 + purchases.length;
-            document.getElementById('purNo').value = `PO-${nextNo}`;
+            const nextNo = 100100 + purchases.length;
+            document.getElementById('purNo').value = `AC-PO-${nextNo}`;
             document.getElementById('purDate').valueAsDate = new Date();
-            const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate() + 7);
-            document.getElementById('purDeliveryDate').valueAsDate = nextWeek;
             document.getElementById('purSupplierInput').value = "";
             document.getElementById('purRefNo').value = "";
             document.getElementById('purSubject').value = "";
@@ -2701,6 +2650,7 @@
             if(s) { 
                 document.getElementById('purItemForm').reset(); 
                 document.getElementById('purProductInput').value = ""; 
+                document.getElementById('purItemDesc').value = "";
                 document.getElementById('purItemUnit').value = "";
                 document.getElementById('purItemPrice').value = "";
                 document.getElementById('purItemQty').value = "1";
@@ -2724,6 +2674,7 @@
             if(pIdx > -1) {
                 const p = products[pIdx];
                 document.getElementById('purProductInput').value = item;
+                document.getElementById('purItemDesc').value = p.desc || '';
                 document.getElementById('purItemUnit').value = p.unit || 'Pcs';
                 document.getElementById('purItemPrice').value = p.rate || 0;
                 calcPurItemTotal();
@@ -2741,6 +2692,7 @@
             if(qty <= 0 || price <= 0) return alert("Qty and Price must be positive");
             currentPurchaseItems.push({ 
                 name: name, 
+                desc: document.getElementById('purItemDesc').value || '',
                 unit: document.getElementById('purItemUnit').value || 'Pcs', 
                 qty: qty, 
                 price: price, 
@@ -2752,7 +2704,7 @@
 
         function renderPurchaseItems() {
             let g = 0;
-            document.getElementById('purchaseItemsBody').innerHTML = currentPurchaseItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.qty}</td><td class="p-3">${it.unit}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removePurItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
+            document.getElementById('purchaseItemsBody').innerHTML = currentPurchaseItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.unit}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removePurItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
             document.getElementById('purGrandTotal').innerText = g.toFixed(2);
         }
 
@@ -2768,7 +2720,6 @@
                 refNo: document.getElementById('purRefNo').value,
                 subject: document.getElementById('purSubject').value || '', 
                 date: document.getElementById('purDate').value,
-                deliveryDate: document.getElementById('purDeliveryDate').value,
                 total: document.getElementById('purGrandTotal').innerText,
                 items: JSON.parse(JSON.stringify(currentPurchaseItems)) 
             };
@@ -2801,7 +2752,6 @@
             document.getElementById('editPurchaseIndex').value = i;
             document.getElementById('purNo').value = pur.id;
             document.getElementById('purDate').value = pur.date;
-            document.getElementById('purDeliveryDate').value = pur.deliveryDate;
             document.getElementById('purRefNo').value = pur.refNo || "";
             document.getElementById('purSubject').value = pur.subject || "";
             document.getElementById('purSupplierInput').value = pur.supplier;
@@ -2866,8 +2816,7 @@
             doc.setFont("helvetica", "normal"); 
             doc.text(`PO No: ${pur.id}`, 130, 47); 
             doc.text(`Date: ${formatFriendlyDate(pur.date)}`, 130, 52); 
-            doc.text(`Delivery Date: ${formatFriendlyDate(pur.deliveryDate)}`, 130, 57);
-            doc.text(`Ref No: ${pur.refNo || 'N/A'}`, 130, 62);
+            doc.text(`Ref No: ${pur.refNo || 'N/A'}`, 130, 57);
 
             let currentY = 70; 
             if (pur.subject) { 
@@ -2876,20 +2825,20 @@
                 currentY += 6; 
             }
             
-            const tableData = pur.items.map((item, i) => [i + 1, item.name, item.qty, item.unit || 'Pcs', item.price, item.total]);
+            const tableData = pur.items.map((item, i) => [i + 1, item.name, item.desc || 'N/A', item.qty, item.unit || 'Pcs', item.price, item.total]);
 
             doc.autoTable({
                 startY: currentY,
-                head: [['SL', 'Items', 'Qty', 'Unit', 'Unit Price', 'Total']],
+                head: [['SL', 'Items', 'Description', 'Qty', 'Unit', 'Unit Price', 'Total']],
                 body: tableData, 
                 theme: 'grid',
                 styles: { textColor: [0, 0, 0], fontSize: 9, lineColor: [0, 0, 0], lineWidth: 0.1 },
                 headStyles: { fillColor: false, textColor: [0, 0, 0], fontStyle: 'bold', lineWidth: 0.1, lineColor: [0, 0, 0], halign: 'center' },
                 columnStyles: {
                     0: { halign: 'center' },
-                    2: { halign: 'center' },
-                    4: { halign: 'center' },
-                    5: { halign: 'center' }
+                    3: { halign: 'center' },
+                    5: { halign: 'right' },
+                    6: { halign: 'right' }
                 },
                 margin: { top: 38, bottom: 45 }, 
                 didDrawPage: (data) => { addHeaderAndFooter(data); }
@@ -2937,216 +2886,7 @@
             doc.save(`${pur.id}_${pur.supplier}.pdf`);
         }
 
-        // MONEY RECEIPT LOGIC
-        function switchMoneyReceiptSubTab(sub) {
-            document.querySelectorAll('.moneyreceipt-sub-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('moneyreceipt-' + sub).classList.add('active');
-            const btnCreate = document.getElementById('btn-money-create');
-            const btnSaved = document.getElementById('btn-money-saved');
-            const btnSaveAction = document.getElementById('saveMoneyReceiptBtn');
-            if(sub === 'create') {
-                btnCreate.classList.add('bg-white', 'shadow-sm', 'text-lime-600');
-                btnSaved.classList.remove('bg-white', 'shadow-sm', 'text-lime-600');
-                btnSaveAction.classList.remove('hidden');
-            } else {
-                btnSaved.classList.add('bg-white', 'shadow-sm', 'text-lime-600');
-                btnCreate.classList.remove('bg-white', 'shadow-sm', 'text-lime-600');
-                btnSaveAction.classList.add('hidden');
-                renderSavedMoneyReceipts();
-            }
-        }
-
-        function startNewMoneyReceiptTab() { initMoneyReceiptFields(); switchMoneyReceiptSubTab('create'); }
-
-        function initMoneyReceiptFields() {
-            const nextNo = 500500 + moneyReceipts.length;
-            document.getElementById('moneyNo').value = `MR-${nextNo}`;
-            document.getElementById('moneyDate').valueAsDate = new Date();
-            document.getElementById('moneyClientInput').value = "";
-            document.getElementById('moneyPaymentMode').value = "Cash";
-            document.getElementById('moneyPurpose').value = "";
-            document.getElementById('moneyAmount').value = "";
-            document.getElementById('moneyAmountWords').value = "";
-            document.getElementById('moneyRefNo').value = "";
-            document.getElementById('editMoneyReceiptIndex').value = "-1";
-            document.getElementById('saveMoneyReceiptBtn').innerText = "SAVE RECEIPT";
-        }
-
-        function showClientSuggestionsMoney() {
-            const val = document.getElementById('moneyClientInput').value.toLowerCase();
-            const list = document.getElementById('clientSuggestionsMoney');
-            if(!val) { list.style.display = 'none'; return; }
-            const matches = clients.filter(c => c.name.toLowerCase().includes(val));
-            if(matches.length > 0) {
-                list.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectClientMoney('${m.name}')"><span class="suggestion-name">${m.name}</span><span class="suggestion-sub"><i class="fas fa-map-marker-alt mr-1"></i>${m.address}</span></div>`).join('');
-                list.style.display = 'block';
-            } else { list.style.display = 'none'; }
-        }
-
-        function selectClientMoney(name) {
-            document.getElementById('moneyClientInput').value = name;
-            document.getElementById('clientSuggestionsMoney').style.display = 'none';
-        }
-
-        function updateMoneyAmountWords() {
-            const amount = parseFloat(document.getElementById('moneyAmount').value) || 0;
-            document.getElementById('moneyAmountWords').value = numberToWords(Math.round(amount));
-        }
-
-        function saveMoneyReceipt() {
-            const clientName = document.getElementById('moneyClientInput').value;
-            const amount = document.getElementById('moneyAmount').value;
-            const editIdx = parseInt(document.getElementById('editMoneyReceiptIndex').value);
-            if(!clientName || !amount || amount <= 0) return alert("Fill all details");
-            const mr = { 
-                id: document.getElementById('moneyNo').value, 
-                client: clientName,
-                date: document.getElementById('moneyDate').value,
-                paymentMode: document.getElementById('moneyPaymentMode').value,
-                purpose: document.getElementById('moneyPurpose').value || '',
-                amount: amount,
-                amountWords: document.getElementById('moneyAmountWords').value,
-                refNo: document.getElementById('moneyRefNo').value || ''
-            };
-            if(editIdx > -1) { moneyReceipts[editIdx] = mr; alert("Money Receipt Updated!"); } else { moneyReceipts.push(mr); alert("Money Receipt Saved!"); }
-            localStorage.setItem('arvin_moneyreceipts_list', JSON.stringify(moneyReceipts));
-            initMoneyReceiptFields(); switchMoneyReceiptSubTab('saved');
-        }
-
-        function renderSavedMoneyReceipts() {
-            const container = document.getElementById('savedMoneyReceiptsList');
-            if(moneyReceipts.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">No saved money receipts yet.</div>'; return; }
-            container.innerHTML = moneyReceipts.map((mr, i) => `
-                <div class="bg-white border-l-4 border-lime-500 shadow-sm rounded-xl p-4 hover:shadow-md transition-all border border-gray-100">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[11px] font-bold text-lime-600 uppercase tracking-wider">${mr.id}</span>
-                        <span class="text-[10px] text-gray-400">${formatFriendlyDate(mr.date)}</span>
-                    </div>
-                    <h4 class="text-sm font-bold text-gray-800 truncate mb-1">${mr.client}</h4>
-                    <p class="text-xs text-gray-600 mb-2">Amount: ৳${mr.amount}</p>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="editMoneyReceipt(${i})" class="flex-1 bg-lime-50 text-lime-600 py-2 rounded-lg text-[10px] font-bold">EDIT</button>
-                        <button onclick="downloadMoneyReceiptPDF(${i})" class="flex-1 bg-green-50 text-green-600 py-2 rounded-lg text-[10px] font-bold">PDF</button>
-                        <button onclick="deleteMoneyReceipt(${i})" class="bg-red-50 text-red-500 px-3 py-2 rounded-lg"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function editMoneyReceipt(i) {
-            const mr = moneyReceipts[i];
-            document.getElementById('editMoneyReceiptIndex').value = i;
-            document.getElementById('moneyNo').value = mr.id;
-            document.getElementById('moneyDate').value = mr.date;
-            document.getElementById('moneyClientInput').value = mr.client;
-            document.getElementById('moneyPaymentMode').value = mr.paymentMode;
-            document.getElementById('moneyPurpose').value = mr.purpose || '';
-            document.getElementById('moneyAmount').value = mr.amount;
-            document.getElementById('moneyAmountWords').value = mr.amountWords;
-            document.getElementById('moneyRefNo').value = mr.refNo || '';
-            document.getElementById('saveMoneyReceiptBtn').innerText = "UPDATE RECEIPT";
-            switchMoneyReceiptSubTab('create');
-        }
-
-        function deleteMoneyReceipt(i) { if(confirm('Delete?')) { moneyReceipts.splice(i, 1); localStorage.setItem('arvin_moneyreceipts_list', JSON.stringify(moneyReceipts)); renderSavedMoneyReceipts(); }}
-
-        function downloadMoneyReceiptPDF(index) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const mr = moneyReceipts[index];
-
-            const addHeaderAndFooter = (data) => {
-                if(settings.logo) { 
-                    try { 
-                        doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); 
-                    } catch(e){} 
-                }
-                doc.setFontSize(16); 
-                doc.setTextColor(0, 0, 0); 
-                doc.setFont("helvetica", "bold"); 
-                doc.text(settings.company, 105, 22, { align: "center" });
-                
-                doc.setFontSize(8); 
-                doc.setFont("helvetica", "normal"); 
-                doc.text(settings.address, 105, 26, { align: "center" });
-                
-                const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
-                doc.text(contactLine, 105, 30, { align: "center" });
-                
-                doc.setFontSize(18); 
-                doc.setFont("helvetica", "bold"); 
-                doc.text("MONEY RECEIPT", 196, 16, { align: "right" });
-                
-                doc.setDrawColor(0, 0, 0); 
-                doc.setLineWidth(0.5); 
-                doc.line(14, 34, 196, 34);
-                
-                const pageCount = doc.internal.getNumberOfPages();
-                doc.setFontSize(8); 
-                doc.setFont("helvetica", "normal"); 
-                doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
-                doc.text("Thank you for your payment!", 105, 288, { align: "center" });
-            };
-
-            doc.setFontSize(10); 
-            doc.setFont("helvetica", "bold"); 
-            doc.text("RECEIVED FROM:", 14, 42); 
-            doc.setFont("helvetica", "normal"); 
-            doc.text(mr.client, 14, 47); 
-            
-            doc.setFont("helvetica", "bold"); 
-            doc.text("RECEIPT DETAILS:", 130, 42);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(`Receipt No: ${mr.id}`, 130, 47); 
-            doc.text(`Date: ${formatFriendlyDate(mr.date)}`, 130, 52); 
-            doc.text(`Payment Mode: ${mr.paymentMode}`, 130, 57);
-            if(mr.refNo) doc.text(`Ref No: ${mr.refNo}`, 130, 62);
-
-            let currentY = 70;
-            
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold"); 
-            doc.text(`Amount: ৳ ${mr.amount}`, 14, currentY);
-            
-            currentY += 8;
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(`Amount in Words: ${mr.amountWords}`, 14, currentY, { maxWidth: 180 });
-            
-            currentY += 10;
-            if(mr.purpose) {
-                doc.setFont("helvetica", "bold"); 
-                doc.text("Purpose:", 14, currentY);
-                doc.setFont("helvetica", "normal"); 
-                doc.text(mr.purpose, 14, currentY + 5, { maxWidth: 180 });
-                currentY += 10;
-            }
-
-            currentY += 20;
-            
-            doc.setFont("helvetica", "bold"); 
-            doc.text("Received By:", 14, currentY);
-            doc.setFont("helvetica", "normal"); 
-            doc.text("_________________________", 14, currentY + 5);
-            doc.text(settings.signatory, 14, currentY + 10);
-            doc.text(settings.designation, 14, currentY + 14);
-
-            let sigY = currentY + 10;
-            
-            if(settings.seal) { 
-                try { 
-                    doc.addImage(settings.seal, 'PNG', 105, sigY - 15, 18, 18); 
-                } catch(e){} 
-            }
-            
-            if(settings.sign) { 
-                try { 
-                    doc.addImage(settings.sign, 'PNG', 155, sigY - 10, 30, 10); 
-                } catch(e){} 
-            }
-
-            doc.save(`${mr.id}_${mr.client}.pdf`);
-        }
+        // MoneyReceipt & Letter functions completely removed as tabs are removed.
 
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
