@@ -13,8 +13,8 @@
         body { font-family: 'Poppins', sans-serif; overflow-x: hidden; background: #f3f4f6; }
         .tab-content { display: none; min-height: calc(150vh - 100px); }
         .tab-content.active { display: flex; flex-direction: column; }
-        .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab { display: none; }
-        .invoice-sub-tab.active, .accounts-sub-tab.active, .quotation-sub-tab.active, .delivery-sub-tab.active, .purchase-sub-tab.active { display: block; }
+        .invoice-sub-tab, .accounts-sub-tab, .quotation-sub-tab, .delivery-sub-tab, .purchase-sub-tab, .moneyreceipt-sub-tab, .documents-sub-tab { display: none; }
+        .invoice-sub-tab.active, .accounts-sub-tab.active, .quotation-sub-tab.active, .delivery-sub-tab.active, .purchase-sub-tab.active, .moneyreceipt-sub-tab.active, .documents-sub-tab.active { display: block; }
         .btn-back:hover i { transform: translateX(-5px); transition: transform 0.3s ease; }
         .table-container { overflow-x: auto; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #ef4444; }
@@ -213,7 +213,9 @@
             text-align: justify;
         }
         
-        /* Cheque details visibility - removed as MoneyReceipt tab is gone */
+        /* Cheque details visibility */
+        #chequeDetails { display: none; }
+        #chequeDetails.visible { display: block; }
         
         /* Ensure VAT/AIT fields visible in Quotation and Purchase tabs */
         #quotNetTotal { font-size: 1rem; }
@@ -268,7 +270,7 @@
                 </div>
                 
                 <div id="nav-grid" class="menu-grid">
-                    <!-- MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Money Receipt (placeholder), Documents (placeholder), Accounts, Settings -->
+                    <!-- MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Money Receipt, Documents, Accounts, Settings -->
                     <button onclick="openTab('clients')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border-red-200">
                         <i class="fas fa-users text-lg mb-1"></i>
                         <span>Clients</span>
@@ -301,7 +303,7 @@
                         <i class="fas fa-clipboard-list text-lg mb-1"></i>
                         <span>Purchase</span>
                     </button>
-                    <!-- two new placeholder tabs -->
+                    <!-- Money Receipt and Documents tabs -->
                     <button onclick="openTab('moneyreceipt')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border-rose-200">
                         <i class="fas fa-receipt text-lg mb-1"></i>
                         <span>Money Receipt</span>
@@ -607,7 +609,7 @@
             </div>
         </div>
 
-        <!-- DELIVERY CHALLAN Tab (Received By signature left align inline with main signature) -->
+        <!-- DELIVERY CHALLAN Tab -->
         <div id="delivery" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-teal-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -765,24 +767,142 @@
             </div>
         </div>
 
-        <!-- MONEY RECEIPT placeholder (no content) -->
+        <!-- MONEY RECEIPT Tab (Enhanced) -->
         <div id="moneyreceipt" class="tab-content bg-white">
-            <div class="flex items-center p-6 border-b border-rose-100">
-                <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-rose-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
-                <h2 class="flex-grow text-center font-bold text-rose-700 uppercase tracking-widest">MONEY RECEIPT (coming soon)</h2>
-                <div class="flex-none w-[75px] hidden md:block"></div>
+            <div class="flex flex-col md:flex-row items-center p-4 border-b border-rose-100 gap-4">
+                <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
+                <div class="flex bg-gray-100 p-1 rounded-xl">
+                    <button onclick="startNewMoneyReceiptTab()" id="btn-mr-create" class="px-6 py-2 rounded-lg text-xs font-bold transition-all bg-white shadow-sm text-rose-600 uppercase">Create Receipt</button>
+                    <button onclick="switchMoneyReceiptSubTab('saved')" id="btn-mr-saved" class="px-6 py-2 rounded-lg text-xs font-bold transition-all text-gray-500 uppercase">Saved Files</button>
+                </div>
+                <div class="flex-grow"></div>
+                <button id="saveMoneyReceiptBtn" onclick="saveMoneyReceipt()" class="bg-green-600 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-700 uppercase">SAVE RECEIPT</button>
             </div>
-            <div class="p-12 text-center text-gray-400 text-sm">Module under development</div>
+            
+            <div id="moneyreceipt-create" class="moneyreceipt-sub-tab active">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="autocomplete-wrapper">
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Received From</label>
+                                <input type="text" id="mrClientInput" oninput="showClientSuggestionsMR()" placeholder="Type client name..." class="w-full border-b-2 bg-transparent py-1">
+                                <div id="clientSuggestionsMR" class="suggestions-list"></div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Payment Mode</label>
+                                <select id="mrPaymentMode" onchange="toggleChequeFields()" class="w-full border-b-2 bg-transparent py-1">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="TT">TT</option>
+                                    <option value="Pay Order">Pay Order</option>
+                                    <option value="Mobile Banking">Mobile Banking</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="chequeDetails">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Cheque No.</label>
+                                    <input type="text" id="mrChequeNo" class="w-full border-b-2 bg-transparent py-1">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase">Bank Name</label>
+                                    <input type="text" id="mrBankName" class="w-full border-b-2 bg-transparent py-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Address</label>
+                            <input type="text" id="mrAddress" readonly class="w-full border-b-2 bg-transparent py-1 text-gray-400">
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
+                        <input type="hidden" id="editMoneyReceiptIndex" value="-1">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Receipt ID</label>
+                            <input type="text" id="mrNo" readonly class="w-full font-mono font-bold text-rose-600 bg-transparent py-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
+                            <input type="date" id="mrDate" class="w-full border-b-2 bg-transparent py-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Received Amount</label>
+                            <input type="number" id="mrAmount" oninput="updateAmountWords()" class="w-full border-b-2 bg-transparent py-1 font-bold text-rose-600" step="0.01">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Amount in Words</label>
+                            <textarea id="mrAmountWords" readonly rows="2" class="w-full border-b-2 bg-transparent py-1 text-xs"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receipt Preview (optional, but keeping consistency) -->
+                <div class="px-6 pb-6">
+                    <div class="bg-white border rounded-xl p-6">
+                        <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest mb-4">Receipt Details</h3>
+                        <p class="text-sm text-gray-600">This receipt will be generated with company header and authorized signature.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="moneyreceipt-saved" class="moneyreceipt-sub-tab p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="savedMoneyReceiptsList"></div>
+            </div>
         </div>
 
-        <!-- DOCUMENTS placeholder (no content) -->
+        <!-- DOCUMENTS Tab (Enhanced) -->
         <div id="documents" class="tab-content bg-white">
-            <div class="flex items-center p-6 border-b border-stone-100">
-                <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-stone-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
-                <h2 class="flex-grow text-center font-bold text-stone-700 uppercase tracking-widest">DOCUMENTS (coming soon)</h2>
-                <div class="flex-none w-[75px] hidden md:block"></div>
+            <div class="flex flex-col md:flex-row items-center p-4 border-b border-stone-100 gap-4">
+                <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
+                <div class="flex bg-gray-100 p-1 rounded-xl">
+                    <button onclick="startNewDocumentTab()" id="btn-doc-create" class="px-6 py-2 rounded-lg text-xs font-bold transition-all bg-white shadow-sm text-stone-600 uppercase">Create Document</button>
+                    <button onclick="switchDocumentsSubTab('saved')" id="btn-doc-saved" class="px-6 py-2 rounded-lg text-xs font-bold transition-all text-gray-500 uppercase">Saved Files</button>
+                </div>
+                <div class="flex-grow"></div>
+                <button id="saveDocumentBtn" onclick="saveDocument()" class="bg-green-600 text-white px-6 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-700 uppercase">SAVE DOCUMENT</button>
             </div>
-            <div class="p-12 text-center text-gray-400 text-sm">Module under development</div>
+            
+            <div id="documents-create" class="documents-sub-tab active">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Document Title</label>
+                            <input type="text" id="docTitle" placeholder="Enter document title..." class="w-full border-b-2 bg-transparent py-1 font-bold text-gray-700">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Text Content (Justified format)</label>
+                            <textarea id="docContent" rows="12" placeholder="Enter document content here..." class="w-full border rounded-lg p-3 text-sm leading-relaxed" style="text-align: justify;"></textarea>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
+                        <input type="hidden" id="editDocumentIndex" value="-1">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Document ID</label>
+                            <input type="text" id="docNo" readonly class="w-full font-mono font-bold text-stone-600 bg-transparent py-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Date</label>
+                            <input type="date" id="docDate" class="w-full border-b-2 bg-transparent py-1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="px-6 pb-6">
+                    <div class="bg-white border rounded-xl p-6">
+                        <h3 class="font-bold text-gray-700 uppercase text-xs tracking-widest mb-4">Document Preview</h3>
+                        <div id="docPreview" class="letter-content-preview text-sm max-h-96 overflow-y-auto p-4 border rounded bg-gray-50">
+                            Document content will appear here...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="documents-saved" class="documents-sub-tab p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="savedDocumentsList"></div>
+            </div>
         </div>
 
         <!-- ACCOUNTS -->
@@ -947,7 +1067,7 @@
         </div>
     </main>
 
-    <!-- Modals (MoneyReceipt & Letter modals completely removed) -->
+    <!-- Modals -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
@@ -1129,7 +1249,7 @@
     </div>
 
     <script>
-        // LOGIN SYSTEM (unchanged)
+        // LOGIN SYSTEM
         function performLogin() {
             const loginId = document.getElementById('loginId').value.trim();
             const loginPass = document.getElementById('loginPass').value.trim();
@@ -1164,6 +1284,8 @@
             quotations = JSON.parse(localStorage.getItem('arvin_quotations_list')) || [];
             deliveries = JSON.parse(localStorage.getItem('arvin_deliveries_list')) || [];
             purchases = JSON.parse(localStorage.getItem('arvin_purchases_list')) || [];
+            moneyReceipts = JSON.parse(localStorage.getItem('arvin_moneyreceipts_list')) || [];
+            documents = JSON.parse(localStorage.getItem('arvin_documents_list')) || [];
             income = JSON.parse(localStorage.getItem('arvin_income_list')) || [];
             expense = JSON.parse(localStorage.getItem('arvin_expense_list')) || [];
             orders = JSON.parse(localStorage.getItem('arvin_orders_list')) || [];
@@ -1194,19 +1316,21 @@
             renderSavedQuotations();
             renderSavedDeliveries();
             renderSavedPurchases();
+            renderSavedMoneyReceipts();
+            renderSavedDocuments();
             loadSettingsFields();
             updateUINames();
             showDashboard();
         }
 
-        // Data store variables (MoneyReceipts & Letters removed)
-        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], income = [], expense = [], orders = [];
+        // Data store variables
+        let clients = [], products = [], suppliers = [], invoices = [], quotations = [], deliveries = [], purchases = [], moneyReceipts = [], documents = [], income = [], expense = [], orders = [];
         let settings = {};
         let currentInvoiceItems = [], currentQuotationItems = [], currentDeliveryItems = [], currentPurchaseItems = [];
         let selectedClientIndex = -1, selectedSupplierIndex = -1;
         let activeAccountsTab = 'transactions';
 
-        // --- Utility functions (all kept same, including numberToWords for PDF) ---
+        // --- Utility functions ---
         function formatFriendlyDate(dateStr) {
             if (!dateStr) return 'N/A';
             const date = new Date(dateStr);
@@ -1226,7 +1350,7 @@
             document.getElementById('nav-company-name').innerText = settings.company || 'ARVIN CONTROLS';
         }
 
-        // Settings Logic (unchanged, currency added)
+        // Settings Logic
         function loadSettingsFields() {
             document.getElementById('setCompanyName').value = settings.company || '';
             document.getElementById('setSlogan').value = settings.slogan || '';
@@ -1297,6 +1421,8 @@
             if(tabId === 'quotation') switchQuotationSubTab('create');
             if(tabId === 'delivery') switchDeliverySubTab('create');
             if(tabId === 'purchase') switchPurchaseSubTab('create');
+            if(tabId === 'moneyreceipt') switchMoneyReceiptSubTab('create');
+            if(tabId === 'documents') switchDocumentsSubTab('create');
             if(tabId === 'inventory') renderInventory();
             if(tabId === 'accounts') switchAccountsTab('transactions');
             document.getElementById('moveTopBtn').style.display = 'flex';
@@ -1308,7 +1434,7 @@
             document.getElementById('moveTopBtn').style.display = 'none';
         }
 
-        // Supplier Logic (unchanged)
+        // Supplier Logic
         function toggleSupplierModal(s, idx=-1) {
             document.getElementById('supplierModal').classList.toggle('hidden', !s);
             if(s && idx > -1) {
@@ -1366,7 +1492,7 @@
             document.getElementById('outStockCount').innerText = out;
         }
 
-        // ACCOUNTS LOGIC (unchanged)
+        // ACCOUNTS LOGIC
         function switchAccountsTab(sub) {
             activeAccountsTab = sub;
             document.querySelectorAll('.accounts-sub-tab').forEach(t => t.classList.remove('active'));
@@ -1602,7 +1728,7 @@
             });
         }
 
-        // --- INVOICE LOGIC (unchanged) ---
+        // --- INVOICE LOGIC ---
         function switchInvoiceSubTab(sub) {
             document.querySelectorAll('.invoice-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('invoice-' + sub).classList.add('active');
@@ -1878,7 +2004,7 @@
             return str.trim() + ' Taka Only';
         }
 
-        // Invoice PDF Generation (unchanged)
+        // Invoice PDF Generation
         function downloadInvoicePDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -2009,7 +2135,7 @@
             doc.save(`${inv.id}_${inv.client}.pdf`);
         }
 
-        // QUOTATION LOGIC (unchanged)
+        // QUOTATION LOGIC
         function switchQuotationSubTab(sub) {
             document.querySelectorAll('.quotation-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('quotation-' + sub).classList.add('active');
@@ -2344,7 +2470,7 @@
             doc.save(`${quot.id}_${quot.client}.pdf`);
         }
 
-        // DELIVERY CHALLAN LOGIC (PDF with Received By left aligned)
+        // DELIVERY CHALLAN LOGIC
         function switchDeliverySubTab(sub) {
             document.querySelectorAll('.delivery-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('delivery-' + sub).classList.add('active');
@@ -2589,8 +2715,7 @@
             doc.text("Total Items Qty:", 140, finalY); 
             doc.text(del.totalQty, 196, finalY, { align: "right" });
             
-            // Received by signature (left align) in line with main signature – placed just after total
-            let sigY = finalY + 12;  // slight vertical space after total
+            let sigY = finalY + 12;
             
             doc.setFont("helvetica", "bold"); 
             doc.text("Received By:", 14, sigY);
@@ -2598,16 +2723,14 @@
             doc.text("_________________________", 14, sigY + 5);
             doc.text("Signature & Date", 14, sigY + 10);
 
-            // Terms & Conditions now placed after Received By (to avoid overlap)
-            let termsY = sigY + 20;  // separate block
+            let termsY = sigY + 20;
             doc.setFontSize(8); 
             doc.setFont("helvetica", "bold"); 
             doc.text("TERMS & CONDITIONS:", 14, termsY);
             doc.setFont("helvetica", "normal"); 
             doc.text(settings.terms_challan || "1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.", 14, termsY + 4, { maxWidth: 120 });
 
-            // Seal and signature (company side) – placed to the right, inline with Received By area but not conflicting
-            let companySigY = sigY - 5;  // align with Received By block visually
+            let companySigY = sigY - 5;
             
             if(settings.seal) { 
                 try { 
@@ -2630,7 +2753,7 @@
             doc.save(`${del.id}_${del.client}.pdf`);
         }
 
-        // PURCHASE ORDER LOGIC (unchanged)
+        // PURCHASE ORDER LOGIC
         function switchPurchaseSubTab(sub) {
             document.querySelectorAll('.purchase-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('purchase-' + sub).classList.add('active');
@@ -2928,7 +3051,423 @@
             doc.save(`${pur.id}_${pur.supplier}.pdf`);
         }
 
-        // MoneyReceipt & Letter functions completely removed as tabs are removed.
+        // MONEY RECEIPT LOGIC
+        function switchMoneyReceiptSubTab(sub) {
+            document.querySelectorAll('.moneyreceipt-sub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('moneyreceipt-' + sub).classList.add('active');
+            const btnCreate = document.getElementById('btn-mr-create');
+            const btnSaved = document.getElementById('btn-mr-saved');
+            const btnSaveAction = document.getElementById('saveMoneyReceiptBtn');
+            if(sub === 'create') {
+                btnCreate.classList.add('bg-white', 'shadow-sm', 'text-rose-600');
+                btnSaved.classList.remove('bg-white', 'shadow-sm', 'text-rose-600');
+                btnSaveAction.classList.remove('hidden');
+            } else {
+                btnSaved.classList.add('bg-white', 'shadow-sm', 'text-rose-600');
+                btnCreate.classList.remove('bg-white', 'shadow-sm', 'text-rose-600');
+                btnSaveAction.classList.add('hidden');
+                renderSavedMoneyReceipts();
+            }
+        }
+
+        function startNewMoneyReceiptTab() { initMoneyReceiptFields(); switchMoneyReceiptSubTab('create'); }
+
+        function initMoneyReceiptFields() {
+            const nextNo = 100100 + moneyReceipts.length;
+            document.getElementById('mrNo').value = `AC-MR-${nextNo}`;
+            document.getElementById('mrDate').valueAsDate = new Date();
+            document.getElementById('mrClientInput').value = "";
+            document.getElementById('mrPaymentMode').value = "Cash";
+            document.getElementById('mrChequeNo').value = "";
+            document.getElementById('mrBankName').value = "";
+            document.getElementById('mrAddress').value = "";
+            document.getElementById('mrAmount').value = "";
+            document.getElementById('mrAmountWords').value = "";
+            document.getElementById('editMoneyReceiptIndex').value = "-1";
+            document.getElementById('saveMoneyReceiptBtn').innerText = "SAVE RECEIPT";
+            selectedClientIndex = -1;
+            document.getElementById('chequeDetails').classList.remove('visible');
+            document.getElementById('chequeDetails').style.display = 'none';
+        }
+
+        function showClientSuggestionsMR() {
+            const val = document.getElementById('mrClientInput').value.toLowerCase();
+            const list = document.getElementById('clientSuggestionsMR');
+            if(!val) { list.style.display = 'none'; return; }
+            const matches = clients.filter(c => c.name.toLowerCase().includes(val));
+            if(matches.length > 0) {
+                list.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectClientMR('${m.name}')"><span class="suggestion-name">${m.name}</span><span class="suggestion-sub"><i class="fas fa-map-marker-alt mr-1"></i>${m.address}</span></div>`).join('');
+                list.style.display = 'block';
+            } else { list.style.display = 'none'; }
+        }
+
+        function selectClientMR(name) {
+            const cIdx = clients.findIndex(c => c.name === name);
+            if(cIdx > -1) {
+                selectedClientIndex = cIdx;
+                document.getElementById('mrClientInput').value = name;
+                document.getElementById('mrAddress').value = clients[cIdx].address;
+                document.getElementById('clientSuggestionsMR').style.display = 'none';
+            }
+        }
+
+        function toggleChequeFields() {
+            const mode = document.getElementById('mrPaymentMode').value;
+            const chequeDiv = document.getElementById('chequeDetails');
+            if(mode === 'Cheque') {
+                chequeDiv.classList.add('visible');
+                chequeDiv.style.display = 'block';
+            } else {
+                chequeDiv.classList.remove('visible');
+                chequeDiv.style.display = 'none';
+            }
+        }
+
+        function updateAmountWords() {
+            const amount = parseFloat(document.getElementById('mrAmount').value) || 0;
+            document.getElementById('mrAmountWords').value = numberToWords(Math.round(amount));
+        }
+
+        function saveMoneyReceipt() {
+            const clientName = document.getElementById('mrClientInput').value;
+            const editIdx = parseInt(document.getElementById('editMoneyReceiptIndex').value);
+            if(!clientName) return alert("Please select a client");
+            if(!document.getElementById('mrAmount').value) return alert("Please enter amount");
+            
+            const mr = { 
+                id: document.getElementById('mrNo').value, 
+                client: clientName,
+                date: document.getElementById('mrDate').value,
+                amount: document.getElementById('mrAmount').value,
+                amountWords: document.getElementById('mrAmountWords').value,
+                paymentMode: document.getElementById('mrPaymentMode').value,
+                chequeNo: document.getElementById('mrChequeNo').value,
+                bankName: document.getElementById('mrBankName').value,
+                address: document.getElementById('mrAddress').value
+            };
+            
+            if(editIdx > -1) { moneyReceipts[editIdx] = mr; alert("Money Receipt Updated!"); } 
+            else { moneyReceipts.push(mr); alert("Money Receipt Saved!"); }
+            
+            localStorage.setItem('arvin_moneyreceipts_list', JSON.stringify(moneyReceipts));
+            initMoneyReceiptFields(); switchMoneyReceiptSubTab('saved');
+        }
+
+        function renderSavedMoneyReceipts() {
+            const container = document.getElementById('savedMoneyReceiptsList');
+            if(moneyReceipts.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">No saved money receipts yet.</div>'; return; }
+            container.innerHTML = moneyReceipts.map((mr, i) => `
+                <div class="bg-white border-l-4 border-rose-500 shadow-sm rounded-xl p-4 hover:shadow-md transition-all border border-gray-100">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[11px] font-bold text-rose-600 uppercase tracking-wider">${mr.id}</span>
+                        <span class="text-[10px] text-gray-400">${formatFriendlyDate(mr.date)}</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-gray-800 truncate mb-1">${mr.client}</h4>
+                    <p class="text-xs text-gray-500 mb-2">Amount: ${mr.amount} | Mode: ${mr.paymentMode}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="editMoneyReceipt(${i})" class="flex-1 bg-rose-50 text-rose-600 py-2 rounded-lg text-[10px] font-bold">EDIT</button>
+                        <button onclick="downloadMoneyReceiptPDF(${i})" class="flex-1 bg-green-50 text-green-600 py-2 rounded-lg text-[10px] font-bold">PDF</button>
+                        <button onclick="deleteMoneyReceipt(${i})" class="bg-red-50 text-red-500 px-3 py-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editMoneyReceipt(i) {
+            const mr = moneyReceipts[i];
+            document.getElementById('editMoneyReceiptIndex').value = i;
+            document.getElementById('mrNo').value = mr.id;
+            document.getElementById('mrDate').value = mr.date;
+            document.getElementById('mrClientInput').value = mr.client;
+            document.getElementById('mrAddress').value = mr.address || "";
+            document.getElementById('mrAmount').value = mr.amount;
+            document.getElementById('mrAmountWords').value = mr.amountWords;
+            document.getElementById('mrPaymentMode').value = mr.paymentMode;
+            document.getElementById('mrChequeNo').value = mr.chequeNo || "";
+            document.getElementById('mrBankName').value = mr.bankName || "";
+            document.getElementById('saveMoneyReceiptBtn').innerText = "UPDATE RECEIPT";
+            toggleChequeFields();
+            switchMoneyReceiptSubTab('create');
+        }
+
+        function deleteMoneyReceipt(i) { if(confirm('Delete?')) { moneyReceipts.splice(i, 1); localStorage.setItem('arvin_moneyreceipts_list', JSON.stringify(moneyReceipts)); renderSavedMoneyReceipts(); }}
+
+        function downloadMoneyReceiptPDF(index) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const mr = moneyReceipts[index];
+            const clientData = clients.find(c => c.name === mr.client) || { address: 'N/A', mobile: 'N/A' };
+
+            const addHeaderAndFooter = (data) => {
+                if(settings.logo) { 
+                    try { 
+                        doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); 
+                    } catch(e){} 
+                }
+                doc.setFontSize(16); 
+                doc.setTextColor(0, 0, 0); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text(settings.company, 105, 22, { align: "center" });
+                
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(settings.address, 105, 26, { align: "center" });
+                
+                const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
+                doc.text(contactLine, 105, 30, { align: "center" });
+                
+                doc.setFontSize(18); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text("MONEY RECEIPT", 196, 16, { align: "right" });
+                
+                doc.setDrawColor(0, 0, 0); 
+                doc.setLineWidth(0.5); 
+                doc.line(14, 34, 196, 34);
+                
+                const pageCount = doc.internal.getNumberOfPages();
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
+                doc.text("Thank you for your payment!", 105, 288, { align: "center" });
+            };
+
+            doc.setFontSize(10); 
+            doc.setFont("helvetica", "bold"); 
+            doc.text("RECEIVED FROM:", 14, 42); 
+            doc.setFont("helvetica", "normal"); 
+            doc.text(mr.client, 14, 47); 
+            doc.text(mr.address || clientData.address, 14, 52, { maxWidth: 80 }); 
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("RECEIPT DETAILS:", 130, 42);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(`Receipt No: ${mr.id}`, 130, 47); 
+            doc.text(`Date: ${formatFriendlyDate(mr.date)}`, 130, 52); 
+            doc.text(`Payment Mode: ${mr.paymentMode}`, 130, 57);
+            
+            if(mr.paymentMode === 'Cheque' && mr.chequeNo) {
+                doc.text(`Cheque No: ${mr.chequeNo}`, 130, 62);
+                doc.text(`Bank: ${mr.bankName}`, 130, 67);
+            }
+
+            let currentY = 80;
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Amount Received:", 14, currentY);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(`${settings.currency} ${mr.amount}`, 60, currentY);
+            
+            currentY += 10;
+            doc.setFont("helvetica", "bold"); 
+            doc.text("In Words:", 14, currentY);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(mr.amountWords, 14, currentY + 5, { maxWidth: 120 });
+
+            let finalY = currentY + 20;
+            
+            let sigY = finalY;
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Received By:", 14, sigY);
+            doc.setFont("helvetica", "normal"); 
+            doc.text("_________________________", 14, sigY + 5);
+            doc.text("Authorized Signature", 14, sigY + 10);
+
+            if(settings.seal) { 
+                try { 
+                    doc.addImage(settings.seal, 'PNG', 105, sigY - 10, 18, 18); 
+                } catch(e){} 
+            }
+            
+            if(settings.sign) { 
+                try { 
+                    doc.addImage(settings.sign, 'PNG', 155, sigY, 30, 10); 
+                } catch(e){} 
+            }
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Authorized Signature", 150, sigY + 15);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(settings.signatory, 150, sigY + 19); 
+            doc.text(settings.designation, 150, sigY + 23);
+
+            doc.save(`${mr.id}_${mr.client}.pdf`);
+        }
+
+        // DOCUMENTS LOGIC
+        function switchDocumentsSubTab(sub) {
+            document.querySelectorAll('.documents-sub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('documents-' + sub).classList.add('active');
+            const btnCreate = document.getElementById('btn-doc-create');
+            const btnSaved = document.getElementById('btn-doc-saved');
+            const btnSaveAction = document.getElementById('saveDocumentBtn');
+            if(sub === 'create') {
+                btnCreate.classList.add('bg-white', 'shadow-sm', 'text-stone-600');
+                btnSaved.classList.remove('bg-white', 'shadow-sm', 'text-stone-600');
+                btnSaveAction.classList.remove('hidden');
+            } else {
+                btnSaved.classList.add('bg-white', 'shadow-sm', 'text-stone-600');
+                btnCreate.classList.remove('bg-white', 'shadow-sm', 'text-stone-600');
+                btnSaveAction.classList.add('hidden');
+                renderSavedDocuments();
+            }
+        }
+
+        function startNewDocumentTab() { initDocumentFields(); switchDocumentsSubTab('create'); }
+
+        function initDocumentFields() {
+            const nextNo = 100100 + documents.length;
+            document.getElementById('docNo').value = `AC-DOC-${nextNo}`;
+            document.getElementById('docDate').valueAsDate = new Date();
+            document.getElementById('docTitle').value = "";
+            document.getElementById('docContent').value = "";
+            document.getElementById('docPreview').innerHTML = "Document content will appear here...";
+            document.getElementById('editDocumentIndex').value = "-1";
+            document.getElementById('saveDocumentBtn').innerText = "SAVE DOCUMENT";
+        }
+
+        document.getElementById('docContent').addEventListener('input', function() {
+            const content = this.value;
+            document.getElementById('docPreview').innerHTML = content.replace(/\n/g, '<br>') || 'Document content will appear here...';
+        });
+
+        function saveDocument() {
+            const title = document.getElementById('docTitle').value;
+            const content = document.getElementById('docContent').value;
+            const editIdx = parseInt(document.getElementById('editDocumentIndex').value);
+            
+            if(!title || !content) return alert("Please enter both title and content");
+            
+            const doc = { 
+                id: document.getElementById('docNo').value, 
+                title: title,
+                date: document.getElementById('docDate').value,
+                content: content
+            };
+            
+            if(editIdx > -1) { documents[editIdx] = doc; alert("Document Updated!"); } 
+            else { documents.push(doc); alert("Document Saved!"); }
+            
+            localStorage.setItem('arvin_documents_list', JSON.stringify(documents));
+            initDocumentFields(); switchDocumentsSubTab('saved');
+        }
+
+        function renderSavedDocuments() {
+            const container = document.getElementById('savedDocumentsList');
+            if(documents.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">No saved documents yet.</div>'; return; }
+            container.innerHTML = documents.map((doc, i) => `
+                <div class="bg-white border-l-4 border-stone-500 shadow-sm rounded-xl p-4 hover:shadow-md transition-all border border-gray-100">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[11px] font-bold text-stone-600 uppercase tracking-wider">${doc.id}</span>
+                        <span class="text-[10px] text-gray-400">${formatFriendlyDate(doc.date)}</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-gray-800 truncate mb-3">${doc.title}</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="editDocument(${i})" class="flex-1 bg-stone-50 text-stone-600 py-2 rounded-lg text-[10px] font-bold">EDIT</button>
+                        <button onclick="downloadDocumentPDF(${i})" class="flex-1 bg-green-50 text-green-600 py-2 rounded-lg text-[10px] font-bold">PDF</button>
+                        <button onclick="deleteDocument(${i})" class="bg-red-50 text-red-500 px-3 py-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editDocument(i) {
+            const doc = documents[i];
+            document.getElementById('editDocumentIndex').value = i;
+            document.getElementById('docNo').value = doc.id;
+            document.getElementById('docDate').value = doc.date;
+            document.getElementById('docTitle').value = doc.title;
+            document.getElementById('docContent').value = doc.content;
+            document.getElementById('docPreview').innerHTML = doc.content.replace(/\n/g, '<br>');
+            document.getElementById('saveDocumentBtn').innerText = "UPDATE DOCUMENT";
+            switchDocumentsSubTab('create');
+        }
+
+        function deleteDocument(i) { if(confirm('Delete?')) { documents.splice(i, 1); localStorage.setItem('arvin_documents_list', JSON.stringify(documents)); renderSavedDocuments(); }}
+
+        function downloadDocumentPDF(index) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const documentData = documents[index];
+
+            const addHeaderAndFooter = (data) => {
+                if(settings.logo) { 
+                    try { 
+                        doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); 
+                    } catch(e){} 
+                }
+                doc.setFontSize(16); 
+                doc.setTextColor(0, 0, 0); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text(settings.company, 105, 22, { align: "center" });
+                
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(settings.address, 105, 26, { align: "center" });
+                
+                const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
+                doc.text(contactLine, 105, 30, { align: "center" });
+                
+                doc.setFontSize(18); 
+                doc.setFont("helvetica", "bold"); 
+                doc.text("DOCUMENT", 196, 16, { align: "right" });
+                
+                doc.setDrawColor(0, 0, 0); 
+                doc.setLineWidth(0.5); 
+                doc.line(14, 34, 196, 34);
+                
+                const pageCount = doc.internal.getNumberOfPages();
+                doc.setFontSize(8); 
+                doc.setFont("helvetica", "normal"); 
+                doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
+                doc.text("Thank you for your business!", 105, 288, { align: "center" });
+            };
+
+            doc.setFontSize(14); 
+            doc.setFont("helvetica", "bold"); 
+            doc.text(documentData.title, 105, 42, { align: "center" });
+            
+            doc.setFontSize(10); 
+            doc.setFont("helvetica", "normal"); 
+            doc.text(`Document ID: ${documentData.id}`, 14, 52);
+            doc.text(`Date: ${formatFriendlyDate(documentData.date)}`, 14, 58);
+
+            // Split content into lines for justified text
+            const contentLines = doc.splitTextToSize(documentData.content, 180);
+            
+            doc.autoTable({
+                startY: 65,
+                body: [contentLines],
+                theme: 'plain',
+                styles: { textColor: [0, 0, 0], fontSize: 10, lineColor: [0, 0, 0], lineWidth: 0, halign: 'justify', valign: 'top' },
+                margin: { left: 14, right: 14, top: 65, bottom: 45 },
+                didDrawPage: (data) => { addHeaderAndFooter(data); }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 6; 
+            
+            let sigY = finalY + 10;
+            
+            if(settings.seal) { 
+                try { 
+                    doc.addImage(settings.seal, 'PNG', 105, sigY - 10, 18, 18); 
+                } catch(e){} 
+            }
+            
+            if(settings.sign) { 
+                try { 
+                    doc.addImage(settings.sign, 'PNG', 155, sigY - 5, 30, 10); 
+                } catch(e){} 
+            }
+            
+            doc.setFont("helvetica", "bold"); 
+            doc.text("Authorized Signature", 150, sigY + 10);
+            doc.setFont("helvetica", "normal"); 
+            doc.text(settings.signatory, 150, sigY + 14); 
+            doc.text(settings.designation, 150, sigY + 18);
+
+            doc.save(`${documentData.id}_${documentData.title.replace(/\s+/g, '_')}.pdf`);
+        }
 
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
