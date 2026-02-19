@@ -268,6 +268,230 @@
         td .financial-input {
             background: transparent;
         }
+
+        /* Money Receipt PDF Styles */
+        .money-receipt-pdf {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .receipt-container-pdf {
+            border: 2px solid #cc0000;
+            padding: 20px;
+            border-radius: 6px;
+            background: #fff;
+            box-shadow: 0 0 12px rgba(0,0,0,0.05);
+        }
+        
+        .receipt-header-pdf {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #cc0000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .receipt-header-pdf h2 {
+            margin: 0;
+            color: #cc0000;
+            font-size: 26px;
+            font-weight: 800;
+        }
+        
+        .receipt-header-right-pdf {
+            text-align: right;
+        }
+        
+        .receipt-header-right-pdf span {
+            display: block;
+            font-size: 14px;
+        }
+        
+        .receipt-header-right-pdf strong {
+            font-weight: 600;
+        }
+        
+        .from-section-pdf {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .from-section-pdf strong {
+            background: #f2f2f2;
+            padding: 8px 12px;
+            display: block;
+            border-radius: 4px;
+        }
+        
+        .client-details-pdf {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        
+        .client-name-pdf {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .client-address-pdf {
+            font-size: 13px;
+        }
+        
+        .amount-section-pdf {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .words-section-pdf {
+            width: 60%;
+        }
+        
+        .words-section-pdf strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .words-display-pdf {
+            border-bottom: 1px solid #aaa;
+            padding: 8px 0;
+            font-size: 14px;
+            text-transform: capitalize;
+        }
+        
+        .amount-display-pdf {
+            width: 35%;
+            text-align: right;
+        }
+        
+        .amount-display-pdf strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .amount-value-pdf {
+            font-size: 22px;
+            font-weight: bold;
+            color: #cc0000;
+        }
+        
+        .payment-details-pdf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .payment-item-pdf {
+            font-size: 14px;
+        }
+        
+        .signature-section-pdf {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed #aaa;
+        }
+        
+        .receiver-signature-pdf {
+            text-align: left;
+            width: 45%;
+        }
+        
+        .receiver-signature-pdf .signature-line-pdf {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            margin-top: 15px;
+        }
+        
+        .company-signature-pdf {
+            text-align: right;
+            width: 45%;
+        }
+        
+        .signature-bar-pdf {
+            width: 200px;
+            height: 1px;
+            background: #000;
+            margin: 2px 0 0 auto;
+        }
+        
+        .company-seal-pdf {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .company-seal-pdf img {
+            max-height: 50px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+        
+        .signature-wrapper-pdf {
+            text-align: right;
+        }
+        
+        .signature-wrapper-pdf img {
+            max-height: 40px;
+            display: inline-block;
+        }
+        
+        .signature-name-pdf {
+            font-size: 11px;
+            display: block;
+            font-weight: bold;
+        }
+        
+        .signature-designation-pdf {
+            font-size: 11px;
+            display: block;
+        }
+        
+        .footer-note-pdf {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+        }
+        
+        .company-header-pdf {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .company-name-pdf {
+            font-size: 28px;
+            font-weight: 800;
+            color: #cc0000;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        
+        .company-details-pdf {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .company-slogan-pdf {
+            font-size: 12px;
+            color: #0000EE;
+            font-weight: bold;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -3224,100 +3448,158 @@
             const doc = new jsPDF('p', 'mm', 'a4');
             const mr = moneyReceipts[index];
             const clientData = clients.find(c => c.name === mr.client) || { address: 'N/A', mobile: 'N/A' };
-
-            const addHeaderAndFooter = (data) => {
-                if(settings.logo) { 
-                    try { 
-                        doc.addImage(settings.logo, 'PNG', 95, 3, 15, 15); 
-                    } catch(e){} 
-                }
-                doc.setFontSize(16); 
-                doc.setTextColor(0, 0, 0); 
-                doc.setFont("helvetica", "bold"); 
-                doc.text(settings.company, 105, 22, { align: "center" });
-                
-                doc.setFontSize(8); 
-                doc.setFont("helvetica", "normal"); 
-                doc.text(settings.address, 105, 26, { align: "center" });
-                
-                const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'} | Website: ${settings.website || 'N/A'}`;
-                doc.text(contactLine, 105, 30, { align: "center" });
-                
-                doc.setFontSize(18); 
-                doc.setFont("helvetica", "bold"); 
-                doc.text("MONEY RECEIPT", 196, 16, { align: "right" });
-                
-                doc.setDrawColor(0, 0, 0); 
-                doc.setLineWidth(0.5); 
-                doc.line(14, 34, 196, 34);
-                
-                const pageCount = doc.internal.getNumberOfPages();
-                doc.setFontSize(8); 
-                doc.setFont("helvetica", "normal"); 
-                doc.text(`Page ${data.pageNumber} of ${pageCount}`, 196, 288, { align: "right" });
-                doc.text("Thank you for your payment!", 105, 288, { align: "center" });
-            };
-
-            doc.setFontSize(10); 
-            doc.setFont("helvetica", "bold"); 
-            doc.text("RECEIVED FROM:", 14, 42); 
-            doc.setFont("helvetica", "normal"); 
-            doc.text(mr.client, 14, 47); 
-            doc.text(mr.address || clientData.address, 14, 52, { maxWidth: 80 }); 
             
-            doc.setFont("helvetica", "bold"); 
-            doc.text("RECEIPT DETAILS:", 130, 42);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(`Receipt No: ${mr.id}`, 130, 47); 
-            doc.text(`Date: ${formatFriendlyDate(mr.date)}`, 130, 52); 
-            doc.text(`Payment Mode: ${mr.paymentMode}`, 130, 57);
+            // Company Header
+            doc.setFontSize(28);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(204, 0, 0);
+            doc.text(settings.company || 'FAITH ENGINEERING', 105, 25, { align: "center" });
             
-            if(mr.paymentMode === 'Cheque' && mr.chequeNo) {
-                doc.text(`Cheque No: ${mr.chequeNo}`, 130, 62);
-                doc.text(`Bank: ${mr.bankName}`, 130, 67);
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(0, 0, 0);
+            doc.text(settings.address || '', 105, 32, { align: "center" });
+            
+            const contactLine = `Mobile: ${settings.mobile || 'N/A'} | Email: ${settings.email || 'N/A'}`;
+            doc.text(contactLine, 105, 37, { align: "center" });
+            
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 255);
+            doc.text(settings.slogan || 'Excellence in Service', 105, 42, { align: "center" });
+            
+            // Receipt Container (border)
+            doc.setDrawColor(204, 0, 0);
+            doc.setLineWidth(1);
+            doc.rect(14, 48, 182, 220); // Outer border
+            
+            // Receipt Header
+            doc.setDrawColor(204, 0, 0);
+            doc.setLineWidth(0.5);
+            doc.line(14, 70, 196, 70); // Line below header
+            
+            doc.setFontSize(26);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(204, 0, 0);
+            doc.text("MONEY RECEIPT", 105, 65, { align: "center" });
+            
+            // Receipt No and Date (right side)
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text("Receipt No:", 130, 55);
+            doc.text("Date:", 130, 60);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text(mr.id, 165, 55);
+            doc.text(formatFriendlyDate(mr.date), 165, 60);
+            
+            // Received From Section
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text("Received with thanks from", 20, 80);
+            
+            // Client Details Box
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.2);
+            doc.rect(20, 85, 170, 20);
+            
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(mr.client, 25, 95);
+            
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text(mr.address || clientData.address, 25, 102);
+            
+            // Amount Section
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("Amount in Words:", 20, 120);
+            
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.2);
+            doc.rect(20, 125, 100, 8);
+            
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.text(mr.amountWords || '', 22, 131);
+            
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("Amount:", 140, 120);
+            
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(204, 0, 0);
+            doc.text(`${settings.currency || '৳'} ${mr.amount}`, 150, 130);
+            
+            // Payment Details
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.2);
+            doc.setFillColor(250, 250, 250);
+            doc.rect(20, 140, 170, 25, 'F');
+            
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 0, 0);
+            doc.text("Payment Mode:", 25, 150);
+            doc.setFont("helvetica", "normal");
+            doc.text(mr.paymentMode, 60, 150);
+            
+            if(mr.paymentMode === 'Cheque') {
+                doc.setFont("helvetica", "bold");
+                doc.text("Cheque No:", 25, 160);
+                doc.setFont("helvetica", "normal");
+                doc.text(mr.chequeNo || '', 60, 160);
+                
+                doc.setFont("helvetica", "bold");
+                doc.text("Bank:", 120, 160);
+                doc.setFont("helvetica", "normal");
+                doc.text(mr.bankName || '', 140, 160);
+            } else {
+                doc.text("Remarks: —", 25, 160);
             }
-
-            let currentY = 80;
             
-            doc.setFont("helvetica", "bold"); 
-            doc.text("Amount Received:", 14, currentY);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(`${settings.currency} ${mr.amount}`, 60, currentY);
+            // Signature Section
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.2);
+            doc.line(20, 190, 70, 190); // Receiver signature line
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("Receiver's Signature", 20, 198);
             
-            currentY += 10;
-            doc.setFont("helvetica", "bold"); 
-            doc.text("In Words:", 14, currentY);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(mr.amountWords, 14, currentY + 5, { maxWidth: 120 });
-
-            let finalY = currentY + 20;
-            
-            let sigY = finalY;
-            
-            doc.setFont("helvetica", "bold"); 
-            doc.text("Received By:", 14, sigY);
-            doc.setFont("helvetica", "normal"); 
-            doc.text("_________________________", 14, sigY + 5);
-            doc.text("Authorized Signature", 14, sigY + 10);
-
-            if(settings.seal) { 
-                try { 
-                    doc.addImage(settings.seal, 'PNG', 105, sigY - 10, 18, 18); 
-                } catch(e){} 
+            // Company Seal and Signature
+            let sealY = 180;
+            if(settings.seal) {
+                try {
+                    doc.addImage(settings.seal, 'PNG', 150, sealY, 25, 25);
+                } catch(e) {}
             }
             
-            if(settings.sign) { 
-                try { 
-                    doc.addImage(settings.sign, 'PNG', 155, sigY, 30, 10); 
-                } catch(e){} 
+            if(settings.sign) {
+                try {
+                    doc.addImage(settings.sign, 'PNG', 120, sealY + 20, 40, 15);
+                } catch(e) {}
             }
             
-            doc.setFont("helvetica", "bold"); 
-            doc.text("Authorized Signature", 150, sigY + 15);
-            doc.setFont("helvetica", "normal"); 
-            doc.text(settings.signatory, 150, sigY + 19); 
-            doc.text(settings.designation, 150, sigY + 23);
-
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.2);
+            doc.line(120, 210, 180, 210); // Company signature line
+            
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("For " + (settings.company || 'FAITH ENGINEERING'), 120, 218);
+            doc.setFont("helvetica", "normal");
+            doc.text(settings.signatory || '', 120, 223);
+            doc.text(settings.designation || 'Authorized Signatory', 120, 228);
+            
+            // Footer Note
+            doc.setFontSize(9);
+            doc.setTextColor(102, 102, 102);
+            doc.text("This is a software generated receipt & valid without signature", 105, 250, { align: "center" });
+            
             doc.save(`${mr.id}_${mr.client}.pdf`);
         }
 
