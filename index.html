@@ -268,7 +268,7 @@
                 </div>
                 
                 <div id="nav-grid" class="menu-grid">
-                    <!-- NEW MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Accounts, Settings (Money Receipt & Letter removed) -->
+                    <!-- MENU ORDER: Clients, Supplier, Products, Inventory, Quotation, Invoice, Delivery Challan, Purchase Order, Money Receipt (placeholder), Documents (placeholder), Accounts, Settings -->
                     <button onclick="openTab('clients')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border-red-200">
                         <i class="fas fa-users text-lg mb-1"></i>
                         <span>Clients</span>
@@ -300,6 +300,15 @@
                     <button onclick="openTab('purchase')" class="bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white border-amber-200">
                         <i class="fas fa-clipboard-list text-lg mb-1"></i>
                         <span>Purchase</span>
+                    </button>
+                    <!-- two new placeholder tabs -->
+                    <button onclick="openTab('moneyreceipt')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border-rose-200">
+                        <i class="fas fa-receipt text-lg mb-1"></i>
+                        <span>Money Receipt</span>
+                    </button>
+                    <button onclick="openTab('documents')" class="bg-stone-50 text-stone-600 hover:bg-stone-600 hover:text-white border-stone-200">
+                        <i class="fas fa-folder-open text-lg mb-1"></i>
+                        <span>Documents</span>
                     </button>
                     <button onclick="openTab('accounts')" class="bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white border-purple-200">
                         <i class="fas fa-calculator text-lg mb-1"></i>
@@ -756,6 +765,26 @@
             </div>
         </div>
 
+        <!-- MONEY RECEIPT placeholder (no content) -->
+        <div id="moneyreceipt" class="tab-content bg-white">
+            <div class="flex items-center p-6 border-b border-rose-100">
+                <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-rose-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
+                <h2 class="flex-grow text-center font-bold text-rose-700 uppercase tracking-widest">MONEY RECEIPT (coming soon)</h2>
+                <div class="flex-none w-[75px] hidden md:block"></div>
+            </div>
+            <div class="p-12 text-center text-gray-400 text-sm">Module under development</div>
+        </div>
+
+        <!-- DOCUMENTS placeholder (no content) -->
+        <div id="documents" class="tab-content bg-white">
+            <div class="flex items-center p-6 border-b border-stone-100">
+                <div class="flex-none"><button onclick="showDashboard()" class="btn-back flex items-center gap-2 bg-gray-100 hover:bg-stone-600 hover:text-white px-4 py-2 rounded-full transition-all text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> Back</button></div>
+                <h2 class="flex-grow text-center font-bold text-stone-700 uppercase tracking-widest">DOCUMENTS (coming soon)</h2>
+                <div class="flex-none w-[75px] hidden md:block"></div>
+            </div>
+            <div class="p-12 text-center text-gray-400 text-sm">Module under development</div>
+        </div>
+
         <!-- ACCOUNTS -->
         <div id="accounts" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-purple-100 gap-4">
@@ -837,7 +866,7 @@
             </div>
         </div>
 
-        <!-- SETTINGS -->
+        <!-- SETTINGS with Currency selector -->
         <div id="settings" class="tab-content bg-white">
             <div class="p-6">
                 <div class="flex items-center mb-6">
@@ -857,6 +886,16 @@
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase">Email</label><input type="email" id="setEmail" class="w-full border-b-2 border-blue-200 bg-transparent py-1"></div>
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase">Mobile</label><input type="text" id="setMobile" class="w-full border-b-2 border-blue-200 bg-transparent py-1"></div>
                             <div><label class="text-[10px] font-bold text-gray-500 uppercase">Website</label><input type="text" id="setWebsite" class="w-full border-b-2 border-blue-200 bg-transparent py-1"></div>
+                        </div>
+                        <!-- Currency selector added here -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-gray-500 uppercase">Currency</label>
+                                <select id="setCurrency" class="w-full border-b-2 border-blue-200 bg-transparent py-1">
+                                    <option value="৳">৳ (BDT)</option>
+                                    <option value="$">$ (USD)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -1135,6 +1174,7 @@
                 email: '', mobile: '', website: '',
                 signatory: '', designation: '',
                 logo: '', seal: '', sign: '',
+                currency: '৳',
                 terms_quot: '1. This quotation is valid for 30 days. 2. Prices are subject to change without notice.', 
                 terms_inv: '1. Payment should be made via check/cash. 2. Goods once sold are not returnable.',
                 terms_challan: '1. Goods received in good condition. 2. Shortage claims must be made within 24 hours.',
@@ -1186,7 +1226,7 @@
             document.getElementById('nav-company-name').innerText = settings.company || 'ARVIN CONTROLS';
         }
 
-        // Settings Logic (unchanged)
+        // Settings Logic (unchanged, currency added)
         function loadSettingsFields() {
             document.getElementById('setCompanyName').value = settings.company || '';
             document.getElementById('setSlogan').value = settings.slogan || '';
@@ -1196,6 +1236,7 @@
             document.getElementById('setWebsite').value = settings.website || '';
             document.getElementById('setSignatoryName').value = settings.signatory || '';
             document.getElementById('setSignatoryDesig').value = settings.designation || '';
+            document.getElementById('setCurrency').value = settings.currency || '৳';
             document.getElementById('termsQuotation').value = settings.terms_quot || '';
             document.getElementById('termsInvoice').value = settings.terms_inv || '';
             document.getElementById('termsChallan').value = settings.terms_challan || '';
@@ -1221,6 +1262,7 @@
             settings.website = document.getElementById('setWebsite').value;
             settings.signatory = document.getElementById('setSignatoryName').value;
             settings.designation = document.getElementById('setSignatoryDesig').value;
+            settings.currency = document.getElementById('setCurrency').value;
             settings.terms_quot = document.getElementById('termsQuotation').value;
             settings.terms_inv = document.getElementById('termsInvoice').value;
             settings.terms_challan = document.getElementById('termsChallan').value;
