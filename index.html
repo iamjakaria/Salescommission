@@ -493,17 +493,21 @@
             margin-top: 2px;
         }
 
-        /* FIX: better column widths for quotation items table */
+        /* Table styling to match invoice layout */
         #quotationItemsBody td:nth-child(2) { max-width: 150px; min-width: 120px; word-break: break-word; } /* Items */
         #quotationItemsBody td:nth-child(3) { max-width: 180px; min-width: 140px; word-break: break-word; } /* Description */
         #quotationItemsBody td:nth-child(4) { text-align: center; } /* Qty */
-        #quotationItemsBody td:nth-child(5) { text-align: center; } /* Unit */
-        #quotationItemsBody td:nth-child(6) { text-align: right; } /* Unit Price */
-        #quotationItemsBody td:nth-child(7) { text-align: right; } /* Total */
-        #quotationItemsBody td:nth-child(8) { text-align: center; } /* Action */
-        #quotationItemsBody th:nth-child(2) { width: 16%; } 
-        #quotationItemsBody th:nth-child(3) { width: 18%; }
-        #quotationItemsBody th:nth-child(6), #quotationItemsBody th:nth-child(7) { width: 10%; }
+        #quotationItemsBody td:nth-child(5) { text-align: right; } /* Price */
+        #quotationItemsBody td:nth-child(6) { text-align: right; font-weight: bold; } /* Total */
+        #quotationItemsBody td:nth-child(7) { text-align: center; } /* Action */
+        
+        #purchaseItemsBody td:nth-child(2) { max-width: 150px; min-width: 120px; word-break: break-word; } /* Items */
+        #purchaseItemsBody td:nth-child(3) { max-width: 180px; min-width: 140px; word-break: break-word; } /* Description */
+        #purchaseItemsBody td:nth-child(4) { text-align: center; } /* Qty */
+        #purchaseItemsBody td:nth-child(5) { text-align: center; } /* Unit */
+        #purchaseItemsBody td:nth-child(6) { text-align: right; } /* Price */
+        #purchaseItemsBody td:nth-child(7) { text-align: right; font-weight: bold; } /* Total */
+        #purchaseItemsBody td:nth-child(8) { text-align: center; } /* Action */
 
         /* Prevent rotation on devices */
         @media screen and (orientation: landscape) {
@@ -749,31 +753,31 @@
                     <div class="table-container bg-white border rounded-xl overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[800px]">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Price</th><th class="p-3">Total</th><th class="p-3">Action</th></tr>
                             </thead>
                             <tbody id="quotationItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
                                 <tr class="border-b">
-                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
+                                    <td colspan="5" class="p-3 text-right font-bold text-gray-600 bg-gray-50">GRAND TOTAL:</td>
                                     <td id="quotGrandTotal" class="p-3 font-black text-indigo-700">0.00</td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
                                 <tr class="border-b">
-                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">VAT (%):</td>
+                                    <td colspan="5" class="p-3 text-right font-bold text-gray-600 bg-gray-50">VAT (%):</td>
                                     <td class="p-3">
                                         <input type="number" id="quotVat" oninput="calculateQuotTotal()" class="financial-input text-indigo-600" value="0" min="0" step="0.01">
                                     </td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
                                 <tr class="border-b">
-                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">AIT (%):</td>
+                                    <td colspan="5" class="p-3 text-right font-bold text-gray-600 bg-gray-50">AIT (%):</td>
                                     <td class="p-3">
                                         <input type="number" id="quotAit" oninput="calculateQuotTotal()" class="financial-input text-indigo-600" value="0" min="0" step="0.01">
                                     </td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
                                 <tr class="border-b">
-                                    <td colspan="6" class="p-3 text-right font-bold text-gray-600 bg-gray-50">NET TOTAL:</td>
+                                    <td colspan="5" class="p-3 text-right font-bold text-gray-600 bg-gray-50">NET TOTAL:</td>
                                     <td id="quotNetTotal" class="p-3 font-black text-green-600">0.00</td>
                                     <td class="bg-gray-50"></td>
                                 </tr>
@@ -1015,10 +1019,10 @@
                             <i class="fas fa-plus mr-1"></i> ADD ITEM
                         </button>
                     </div>
-                    <div class="table-container bg-white border rounded-xl overflow-hidden">
-                        <table class="w-full text-left border-collapse">
+                    <div class="table-container bg-white border rounded-xl overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
-                                <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
+                                <tr><th class="p-3">SL</th><th class="p-3">Item</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Price</th><th class="p-3">Total</th><th class="p-3">Action</th></tr>
                             </thead>
                             <tbody id="purchaseItemsBody" class="text-sm"></tbody>
                             <tfoot class="text-sm border-t-2 border-gray-200">
@@ -1438,8 +1442,8 @@
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="quotItemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="quotItemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="quotItemQty" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" value="1" min="1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit Price (৳)</label><input type="number" id="quotItemPrice" step="0.01" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total Price</label><input type="text" id="quotItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-indigo-600"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Price (৳)</label><input type="number" id="quotItemPrice" step="0.01" oninput="calcQuotItemTotal()" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total</label><input type="text" id="quotItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-indigo-600"></div>
                 <button type="submit" class="w-full bg-indigo-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-indigo-600"><i class="fas fa-plus mr-1"></i> Add to Quotation</button>
             </form>
         </div>
@@ -1482,8 +1486,8 @@
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Description</label><input type="text" id="purItemDesc" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit</label><input type="text" id="purItemUnit" readonly class="w-full border-b-2 bg-gray-50 py-1"></div>
                 <div><label class="text-[10px] font-bold text-gray-500 uppercase">Qty</label><input type="number" id="purItemQty" oninput="calcPurItemTotal()" class="w-full border-b-2 py-1" value="1" min="1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Unit Price (৳)</label><input type="number" id="purItemPrice" step="0.01" oninput="calcPurItemTotal()" class="w-full border-b-2 py-1" required></div>
-                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total Price</label><input type="text" id="purItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-amber-600"></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Price (৳)</label><input type="number" id="purItemPrice" step="0.01" oninput="calcPurItemTotal()" class="w-full border-b-2 py-1" required></div>
+                <div><label class="text-[10px] font-bold text-gray-500 uppercase">Total</label><input type="text" id="purItemTotal" readonly class="w-full border-b-2 bg-gray-50 py-1 font-bold text-amber-600"></div>
                 <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg uppercase shadow-md hover:bg-amber-600"><i class="fas fa-plus mr-1"></i> Add to PO</button>
             </form>
         </div>
@@ -2524,7 +2528,7 @@
 
         function renderQuotationItems() {
             let g = 0;
-            document.getElementById('quotationItemsBody').innerHTML = currentQuotationItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.unit}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removeQuotItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
+            document.getElementById('quotationItemsBody').innerHTML = currentQuotationItems.map((it, i) => { g += parseFloat(it.total); return `<tr class="border-b"><td class="p-3">${i+1}</td><td class="p-3"><b>${it.name}</b></td><td class="p-3">${it.desc}</td><td class="p-3">${it.qty}</td><td class="p-3">${it.price}</td><td class="p-3 font-bold">${it.total}</td><td class="p-3"><button onclick="removeQuotItem(${i})" class="text-red-400"><i class="fas fa-times"></i></button></td></tr>`; }).join('');
             document.getElementById('quotGrandTotal').innerText = g.toFixed(2);
             calculateQuotTotal();
         }
