@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Arvin Controls | Fire Safety Engineering</title>
     <!-- Tailwind + Font Awesome loaded with fallback for offline -->
     <script>
@@ -492,6 +492,25 @@
             font-weight: bold;
             margin-top: 2px;
         }
+
+        /* FIX: better column widths for quotation items table */
+        #quotationItemsBody td:nth-child(2) { max-width: 150px; min-width: 120px; word-break: break-word; } /* Items */
+        #quotationItemsBody td:nth-child(3) { max-width: 180px; min-width: 140px; word-break: break-word; } /* Description */
+        #quotationItemsBody td:nth-child(4) { text-align: center; } /* Qty */
+        #quotationItemsBody td:nth-child(5) { text-align: center; } /* Unit */
+        #quotationItemsBody td:nth-child(6) { text-align: right; } /* Unit Price */
+        #quotationItemsBody td:nth-child(7) { text-align: right; } /* Total */
+        #quotationItemsBody td:nth-child(8) { text-align: center; } /* Action */
+        #quotationItemsBody th:nth-child(2) { width: 16%; } 
+        #quotationItemsBody th:nth-child(3) { width: 18%; }
+        #quotationItemsBody th:nth-child(6), #quotationItemsBody th:nth-child(7) { width: 10%; }
+
+        /* Prevent rotation on devices */
+        @media screen and (orientation: landscape) {
+            html {
+                transform: rotate(0deg);
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -726,9 +745,9 @@
                             <i class="fas fa-plus mr-1"></i> ADD ITEM
                         </button>
                     </div>
-                    <!-- FIXED: table-container ensures horizontal scroll, now Action column will be visible on mobile -->
+                    <!-- table-container ensures horizontal scroll, now Action column will be visible on mobile -->
                     <div class="table-container bg-white border rounded-xl overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
                                 <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
                             </thead>
@@ -1321,7 +1340,7 @@
 
     <!-- Modals -->
     <div id="clientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-red-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 id="clientModalTitle" class="font-bold uppercase">Add Client</h3>
                 <button onclick="toggleClientModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1341,7 +1360,7 @@
     </div>
 
     <div id="productModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 id="productModalTitle" class="font-bold uppercase">Add Product</h3>
                 <button onclick="toggleProductModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1360,7 +1379,7 @@
     </div>
 
     <div id="supplierModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-blue-600 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Supplier</h3>
                 <button onclick="toggleSupplierModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1382,7 +1401,7 @@
 
     <!-- Invoice Item Modal -->
     <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-yellow-500 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Add Item to Invoice</h3>
                 <button onclick="toggleItemModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1405,7 +1424,7 @@
 
     <!-- Quotation Item Modal -->
     <div id="quotItemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-indigo-500 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Add Item to Quotation</h3>
                 <button onclick="toggleQuotItemModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1428,7 +1447,7 @@
 
     <!-- Delivery Item Modal -->
     <div id="delItemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-teal-500 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Add Item to Challan</h3>
                 <button onclick="toggleDelItemModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1449,7 +1468,7 @@
 
     <!-- Purchase Item Modal -->
     <div id="purItemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[150] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-amber-500 p-4 text-white flex justify-between items-center sticky top-0 z-10">
                 <h3 class="font-bold uppercase">Add Item to PO</h3>
                 <button onclick="togglePurItemModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button>
@@ -1472,7 +1491,7 @@
 
     <!-- Account Modal -->
     <div id="accModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div id="accModalHeader" class="p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 id="accModalTitle" class="font-bold uppercase">Add Entry</h3><button onclick="toggleAccModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
             <form id="accForm" class="p-6 space-y-4">
                 <input type="hidden" id="accType" value="income">
@@ -1486,7 +1505,7 @@
     </div>
 
     <div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl w-full max-w-md maxh-[90vh] overflow-y-auto">
             <div class="bg-orange-600 p-4 text-white flex justify-between items-center sticky top-0 z-10"><h3 class="font-bold uppercase">Work Order</h3><button onclick="toggleOrderModal(false)" class="text-white hover:text-gray-200 text-2xl modal-close-btn">&times;</button></div>
             <form id="orderForm" class="p-6 space-y-4">
                 <input type="hidden" id="editOrderIndex" value="-1">
@@ -2636,6 +2655,7 @@
 
         function deleteQuotation(i) { if(confirm('Delete?')) { quotations.splice(i, 1); localStorage.setItem('arvin_quotations_list', JSON.stringify(quotations)); renderSavedQuotations(); }}
 
+        // MODIFIED: Quotation PDF with Unit Price column centred
         function downloadQuotationPDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -2709,8 +2729,9 @@
                 columnStyles: {
                     0: { halign: 'center' },
                     3: { halign: 'center' },
-                    5: { halign: 'right' },
-                    6: { halign: 'right' }
+                    4: { halign: 'center' },
+                    5: { halign: 'center' },   // Unit Price centred
+                    6: { halign: 'right' }      // Total aligned right
                 },
                 margin: { top: 38, bottom: 45 }, 
                 didDrawPage: (data) => { addHeaderAndFooter(data); }
@@ -3837,6 +3858,24 @@
 
         function filterClients() { filterTable('clientTableBody', document.getElementById('clientSearch').value); }
         function filterProducts() { filterTable('productTableBody', document.getElementById('productSearch').value); }
+
+        // --- RIGHT SWIPE BACK ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            // swipe from right edge (start > 80% width) and leftward movement > 60px
+            if (touchStartX > window.innerWidth * 0.8 && touchStartX - touchEndX > 60) {
+                // if any tab active, go back to dashboard
+                const activeTab = document.querySelector('.tab-content.active');
+                if (activeTab && activeTab.id !== 'dashboard') {
+                    showDashboard();
+                }
+            }
+        }
+        document.addEventListener('touchstart', handleTouchStart);
+        document.addEventListener('touchend', handleTouchEnd);
     </script>
 </body>
 </html>
