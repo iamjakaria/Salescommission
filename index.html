@@ -671,7 +671,7 @@
             </div>
         </div>
 
-        <!-- QUOTATION Tab -->
+        <!-- QUOTATION Tab (with convert options) -->
         <div id="quotation" class="tab-content bg-white">
             <div class="flex flex-col md:flex-row items-center p-4 border-b border-indigo-100 gap-4">
                 <button onclick="showDashboard()" class="btn-back bg-gray-100 px-4 py-2 rounded-full text-xs font-bold uppercase"><i class="fas fa-arrow-left"></i> BACK</button>
@@ -726,8 +726,9 @@
                             <i class="fas fa-plus mr-1"></i> ADD ITEM
                         </button>
                     </div>
-                    <div class="table-container bg-white border rounded-xl overflow-hidden">
-                        <table class="w-full text-left border-collapse">
+                    <!-- FIXED: table-container ensures horizontal scroll, now Action column will be visible on mobile -->
+                    <div class="table-container bg-white border rounded-xl overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
                             <thead class="bg-gray-100 text-[10px] uppercase text-gray-600">
                                 <tr><th class="p-3">SL</th><th class="p-3">Items</th><th class="p-3">Description</th><th class="p-3">Qty</th><th class="p-3">Unit</th><th class="p-3">Unit Price</th><th class="p-3">Total Price</th><th class="p-3">Action</th></tr>
                             </thead>
@@ -1564,7 +1565,7 @@
             renderProducts();
             renderSuppliers();
             renderSavedInvoices();
-            renderSavedQuotations();
+            renderSavedQuotations();    // includes convert buttons
             renderSavedDeliveries();
             renderSavedPurchases();
             renderSavedMoneyReceipts();
@@ -2255,7 +2256,7 @@
             return str.trim() + ' Taka Only';
         }
 
-        // Invoice PDF Generation
+        // Invoice PDF Generation (unchanged design)
         function downloadInvoicePDF(index) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -2386,7 +2387,7 @@
             doc.save(`${inv.id}_${inv.client}.pdf`);
         }
 
-        // QUOTATION LOGIC
+        // QUOTATION LOGIC (with convert buttons)
         function switchQuotationSubTab(sub) {
             document.querySelectorAll('.quotation-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('quotation-' + sub).classList.add('active');
@@ -2541,6 +2542,7 @@
             initQuotationFields(); switchQuotationSubTab('saved');
         }
 
+        // Updated renderSavedQuotations with Convert buttons (Invoice & Delivery)
         function renderSavedQuotations() {
             const container = document.getElementById('savedQuotationsList');
             if(quotations.length === 0) { container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">No saved quotations yet.</div>'; return; }
@@ -2554,10 +2556,65 @@
                     <div class="flex flex-wrap gap-2">
                         <button onclick="editQuotation(${i})" class="flex-1 bg-indigo-50 text-indigo-600 py-2 rounded-lg text-[10px] font-bold">EDIT</button>
                         <button onclick="downloadQuotationPDF(${i})" class="flex-1 bg-green-50 text-green-600 py-2 rounded-lg text-[10px] font-bold">PDF</button>
+                        <button onclick="convertQuotationToInvoice(${i})" class="flex-1 bg-yellow-50 text-yellow-600 py-2 rounded-lg text-[10px] font-bold"><i class="fas fa-file-invoice mr-1"></i>→INV</button>
+                        <button onclick="convertQuotationToDelivery(${i})" class="flex-1 bg-teal-50 text-teal-600 py-2 rounded-lg text-[10px] font-bold"><i class="fas fa-truck mr-1"></i>→DEL</button>
                         <button onclick="deleteQuotation(${i})" class="bg-red-50 text-red-500 px-3 py-2 rounded-lg"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        // New conversion functions (keep PDF design unchanged)
+        function convertQuotationToInvoice(index) {
+            const quot = quotations[index];
+            // Prepare invoice items from quotation items
+            currentInvoiceItems = quot.items.map(it => ({
+                name: it.name,
+                desc: it.desc || '',
+                unit: it.unit || 'Pcs',
+                qty: it.qty,
+                price: it.price,
+                total: (it.qty * it.price).toFixed(2)
+            }));
+            // Fill invoice fields
+            document.getElementById('invNo').value = `INV-${100100 + invoices.length}`;
+            document.getElementById('invDate').value = quot.date;
+            document.getElementById('invClientInput').value = quot.client;
+            document.getElementById('invOrderId').value = quot.refNo || '';
+            document.getElementById('invSubject').value = quot.subject || '';
+            const c = clients.find(cl => cl.name === quot.client);
+            document.getElementById('invAddress').value = c ? c.address : "N/A";
+            document.getElementById('invPaid').value = 0;
+            document.getElementById('editInvoiceIndex').value = "-1";
+            document.getElementById('saveInvoiceBtn').innerText = "SAVE INVOICE";
+            renderInvoiceItems();
+            // Switch to invoice create tab
+            openTab('invoice');
+            switchInvoiceSubTab('create');
+        }
+
+        function convertQuotationToDelivery(index) {
+            const quot = quotations[index];
+            // Prepare delivery items from quotation items
+            currentDeliveryItems = quot.items.map(it => ({
+                name: it.name,
+                desc: it.desc || '',
+                qty: it.qty,
+                remarks: ''
+            }));
+            // Fill delivery fields
+            document.getElementById('delNo').value = `AC-DC-${10050 + deliveries.length}`;
+            document.getElementById('delDate').value = quot.date;
+            document.getElementById('delClientInput').value = quot.client;
+            document.getElementById('delOrderId').value = quot.refNo || '';
+            document.getElementById('delGatePassNo').value = '';
+            const c = clients.find(cl => cl.name === quot.client);
+            document.getElementById('delAddress').value = c ? c.address : "N/A";
+            document.getElementById('editDeliveryIndex').value = "-1";
+            document.getElementById('saveDeliveryBtn').innerText = "SAVE CHALLAN";
+            renderDeliveryItems();
+            openTab('delivery');
+            switchDeliverySubTab('create');
         }
 
         function editQuotation(i) {
@@ -2721,7 +2778,7 @@
             doc.save(`${quot.id}_${quot.client}.pdf`);
         }
 
-        // DELIVERY CHALLAN LOGIC
+        // DELIVERY CHALLAN LOGIC (unchanged)
         function switchDeliverySubTab(sub) {
             document.querySelectorAll('.delivery-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('delivery-' + sub).classList.add('active');
@@ -3004,7 +3061,7 @@
             doc.save(`${del.id}_${del.client}.pdf`);
         }
 
-        // PURCHASE ORDER LOGIC
+        // PURCHASE ORDER LOGIC (unchanged)
         function switchPurchaseSubTab(sub) {
             document.querySelectorAll('.purchase-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('purchase-' + sub).classList.add('active');
@@ -3302,7 +3359,7 @@
             doc.save(`${pur.id}_${pur.supplier}.pdf`);
         }
 
-        // MONEY RECEIPT LOGIC
+        // MONEY RECEIPT LOGIC (unchanged)
         function switchMoneyReceiptSubTab(sub) {
             document.querySelectorAll('.moneyreceipt-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('moneyreceipt-' + sub).classList.add('active');
@@ -3603,7 +3660,7 @@
             doc.save(`${mr.id}_${mr.client}.pdf`);
         }
 
-        // DOCUMENTS LOGIC
+        // DOCUMENTS LOGIC (unchanged)
         function switchDocumentsSubTab(sub) {
             document.querySelectorAll('.documents-sub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('documents-' + sub).classList.add('active');
